@@ -1,8 +1,10 @@
 from PyQt4 import QtGui, QtCore
-import sys,os
+import sys,os,time
 
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.ADC as ADC
+import Adafruit_BMP.BMP085 as BMP085
+
 
 from MPUaccel import ReadAccel
 
@@ -29,17 +31,25 @@ class MicroGravedadControl(QtCore.QObject):
     def __init__(self):
         super(MicroGravedadControl, self).__init__()
         # Thread Accel
-        self.threadimu = QtCore.QThread() 
-        self.workerimu = WorkerImu()      
-        self.workerimu.moveToThread(self.threadimu) 
-        self.threadimu.started.connect(self.workerimu.setup) 
+        self.threadImu = QtCore.QThread() 
+        self.workerImu = WorkerImu()      
+        self.workerImu.moveToThread(self.threadImu) 
+        self.threadImu.started.connect(self.workerImu.setup) 
         
         # adding by emitting signal in different thread
-        self.threadadc = QtCore.QThread()
-        self.workeradc = WorkerADC()
-        self.workeradc.moveToThread(self.threadadc)
-        self.threadadc.started.connect(self.workeradc.setup)
+        self.threadAdc = QtCore.QThread()
+        self.workerAdc = WorkerADC()
+        self.workerAdc.moveToThread(self.threadAdc)
+        self.threadAdc.started.connect(self.workerAdc.setup)
+        
+        # adding by emitting signal in different thread
+        self.threadTemp = QtCore.QThread()
+        self.workerTemp = WorkerTemp()
+        self.workerTemp.moveToThread(self.threadTemp)
+        self.threadTemp.started.connect(self.workerTemp.setup)
+        
 
+        
         self.crearDir() ## crear directorio
         print "Push Start Button"
         
@@ -50,32 +60,45 @@ class MicroGravedadControl(QtCore.QObject):
     def start(self,isr): 
         #-----------------------------------
         print "Start Capture"
-        #self.threadadc.start() # Worker Thread setup start
-        self.threadimu.start() # Worker Thread setup start
+        #self.threadAdc.start() # Worker Thread setup start
+        self.threadImu.start() # Worker Thread setup start
+        self.threadTemp.start() # Worker Thread setup start
         GPIO.remove_event_detect("P9_24")
+        GPIO.output(Led2,GPIO.HIGH) #Led1 on Indicates thats software it's running
         #-----------------------------------
         return
     
     def stop(self,isr): 
         #------------------
-        if self.threadadc.isRunning() == True:
-            self.workeradc.stop()
-            self.threadadc.quit()
-            self.threadadc.terminate()
-            print "stop Thread"
+        if self.threadAdc.isRunning() == True:
+            self.workerAdc.stop()
+            self.threadAdc.quit()
+            self.threadAdc.terminate()
+            print "stop adcThread"
             #------------------
-        if self.threadimu.isRunning() == True:
-            self.workerimu.stopFlag()
-            exitWorkerFlag = self.workerimu.exitWorker
+        if self.threadImu.isRunning() == True:
+            self.workerImu.stopFlag()
+            exitWorkerFlag = self.workerImu.exitWorker
             while  exitWorkerFlag != 1:
-                exitWorkerFlag = self.workerimu.exitflag
-                #print "waiting..."
-            self.threadimu.quit()
-            self.threadimu.terminate()
-            print "stop Thread"
-            #------------------    
+                time.sleep(0.05)
+                exitWorkerFlag = self.workerImu.exitflag
+            self.threadImu.quit()
+            self.threadImu.terminate()
+            print "stop imuThread"
+            #------------------
+        if self.threadTemp.isRunning() == True:
+            self.workerTemp.stopFlag()
+            exitWorkerFlag = self.workerTemp.exitWorker
+            while  exitWorkerFlag != 1:
+                time.sleep(0.05)
+                exitWorkerFlag = self.workerTemp.exitflag
+            self.threadTemp.quit()
+            self.threadTemp.terminate()
+            print "stop tempThread"
+            
         print "stop program"
         GPIO.output(Led1,GPIO.LOW) #Led1 off Indicates thats software it's not running
+        GPIO.output(Led2,GPIO.LOW) #Led1 off Indicates thats software it's not running
         GPIO.cleanup()
         QtCore.QCoreApplication.exit(0) # exit app
         return
@@ -106,12 +129,11 @@ class WorkerImu(QtCore.QObject):
                     self.accel.write(str(i))
                     self.accel.flush()
             elif (self.stopflag == 1):
-                print "Stop Reading Imu"
+                #print "Stop Reading Imu"
                 self.exitflag = 1
                 self.accel.close() #close accel file
                 self.timer.stop()
-                self._exit = True
-                
+                self._exit = True            
     def stopFlag(self):
         self.stopflag = 1
     def exitWorker(self):
@@ -145,7 +167,44 @@ class WorkerADC(QtCore.QObject):
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.readEcg)
         self.timer.start(200)
-                
+
+class WorkerTemp(QtCore.QObject):
+    def readTemp(self):
+        #read temperature
+        self.bmpData[0] = "%.2f" % round(self.sensorTemp.read_temperature(),2)
+        self.bmpData[2] = "%.2f" % round(self.sensorTemp.read_pressure(),2)
+        self.bmpData[4] = "%.2f" % round(self.sensorTemp.read_altitude(),2)
+        self.bmpData[6] = "%.2f" % round(self.sensorTemp.read_sealevel_pressure(),2) 
+        
+        for i in self.bmpData:
+            if (self.stopflag == 0):
+                with open("bmpdata.txt", "a") as self.bmpdatafile:
+                    self.bmpdatafile.write(str(i))
+                    self.bmpdatafile.flush()
+            elif (self.stopflag == 1):
+                #print "Stop Reading bmp180"
+                self.exitflag = 1
+                self.bmpdatafile.close() #close  file
+                self.timer.stop()
+                self._exit = True            
+    def stopFlag(self):
+        self.stopflag = 1
+    def exitWorker(self):
+        return self.exitflag
+    def setup(self):
+        self.stopflag = 0
+        self.exitflag = 0
+        self.sensorTemp = BMP085.BMP085()
+        self.bmpdatafile = open("bmpdata.txt", "w")
+        self.bmpdatafile.write("Temp;Pressure;Altitude;seaLevelP;")
+        self.bmpdatafile.write("\n")
+        self.bmpdatafile.close() #close accel file    
+        self.bmpData = [0,';',0,';',0,';',0,';',"\n"]
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(False)
+        self.timer.timeout.connect(self.readTemp)
+        self.timer.start(1000)
+    
 if __name__ == "__main__":
     app = QtCore.QCoreApplication(sys.argv)
     micro = MicroGravedadControl()
