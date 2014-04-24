@@ -55,6 +55,7 @@ class MicroGravedadControl(QtCore.QObject):
         
         GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=100)
         GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=100)
+        GPIO.add_event_detect("P9_30", GPIO.RISING,callback=self.exitapp, bouncetime=100)
         
 
     def start(self,isr): 
@@ -70,6 +71,7 @@ class MicroGravedadControl(QtCore.QObject):
     
     def stop(self,isr): 
         #------------------
+        #GPIO.remove_event_detect("P9_26")
         if self.threadAdc.isRunning() == True:
             self.workerAdc.stop()
             self.threadAdc.quit()
@@ -78,20 +80,20 @@ class MicroGravedadControl(QtCore.QObject):
             #------------------
         if self.threadImu.isRunning() == True:
             self.workerImu.stopFlag()
-            exitWorkerFlag = self.workerImu.exitWorker
-            while  exitWorkerFlag != 1:
-                time.sleep(0.05)
-                exitWorkerFlag = self.workerImu.exitflag
+            #exitWorkerFlag = self.workerImu.exitWorker
+            #while  exitWorkerFlag != 1:
+            #time.sleep(0.05)
+            #    exitWorkerFlag = self.workerImu.exitflag
             self.threadImu.quit()
             self.threadImu.terminate()
             print "stop imuThread"
             #------------------
         if self.threadTemp.isRunning() == True:
             self.workerTemp.stopFlag()
-            exitWorkerFlag = self.workerTemp.exitWorker
-            while  exitWorkerFlag != 1:
-                time.sleep(0.05)
-                exitWorkerFlag = self.workerTemp.exitflag
+            #exitWorkerFlag = self.workerTemp.exitWorker
+            #while  exitWorkerFlag != 1:
+            #time.sleep(0.05)
+            #    exitWorkerFlag = self.workerTemp.exitflag
             self.threadTemp.quit()
             self.threadTemp.terminate()
             print "stop tempThread"
@@ -99,9 +101,15 @@ class MicroGravedadControl(QtCore.QObject):
         print "stop program"
         GPIO.output(Led1,GPIO.LOW) #Led1 off Indicates thats software it's not running
         GPIO.output(Led2,GPIO.LOW) #Led1 off Indicates thats software it's not running
+       
+        #
+        return
+    def exitapp(self,isr):
+        print "Exit App"
         GPIO.cleanup()
         QtCore.QCoreApplication.exit(0) # exit app
-        return
+        return    
+            
 
     def crearDir(self):
         self.directorioOriginal = os.getcwd()
