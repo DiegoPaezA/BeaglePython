@@ -65,7 +65,11 @@ class MicroGravedadControl(QtCore.QObject):
             print "stop Thread"
             #------------------
         if self.threadimu.isRunning() == True:
-            self.workerimu.stop()
+            self.workerimu.stopFlag()
+            exitWorkerFlag = self.workerimu.exitWorker
+            while  exitWorkerFlag != 1:
+                exitWorkerFlag = self.workerimu.exitflag
+                #print "waiting..."
             self.threadimu.quit()
             self.threadimu.terminate()
             print "stop Thread"
@@ -97,19 +101,24 @@ class WorkerImu(QtCore.QObject):
         self.data[4] = az
         
         for i in self.data:
-            with open("accel.txt", "a") as self.accel:
-                self.accel.write(str(i))
-                self.accel.flush()
-                #---- probar si el archivo se cierra despues de cada with open
-            
-    def stop(self):
-        estado = self.accel.closed
-        print "the file is: " + str(estado)
-        self.accel.close() #close accel file
-        print "the file is: " + str(estado)
-        self.timer.stop()
-        self._exit = True
+            if (self.stopflag == 0):
+                with open("accel.txt", "a") as self.accel:
+                    self.accel.write(str(i))
+                    self.accel.flush()
+            elif (self.stopflag == 1):
+                print "Stop Reading Imu"
+                self.exitflag = 1
+                self.accel.close() #close accel file
+                self.timer.stop()
+                self._exit = True
+                
+    def stopFlag(self):
+        self.stopflag = 1
+    def exitWorker(self):
+        return self.exitflag
     def setup(self):
+        self.stopflag = 0
+        self.exitflag = 0
         #Configuration of Accel Sensor
         self.Imu=ReadAccel()
         self.accel = open("accel.txt", "w")
@@ -136,9 +145,7 @@ class WorkerADC(QtCore.QObject):
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.readEcg)
         self.timer.start(200)
-        
-        
-        
+                
 if __name__ == "__main__":
     app = QtCore.QCoreApplication(sys.argv)
     micro = MicroGravedadControl()
