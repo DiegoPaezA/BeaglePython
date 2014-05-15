@@ -120,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.datoplotpith = []
         self.datoplotroll = []
         
-        self.posicion1 = True
+        self.posicion1 = False
         self.posicion2 = False
         
         self.swith = 0 # swith referencias
@@ -138,7 +138,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Inicializar conexion con arduino
         self.initSerial() # verifica la conexion con arduino
-       #------------------------------------------------------------------------------
+    #------------------------------------------------------------------------------
 # Fin inicializacion de la clase-------------------------------------------------------------
         
     @pyqtSignature("")
@@ -329,14 +329,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resetButton.setEnabled(True)
         self.showtimer.stop() # parar Timer que muestra el tiempo
         #np.savetxt('tempoProvaSeg' + str(self.dataread) + horaActual + '.txt', self.tempoProva, fmt='%i') # salvar tiempo de prueba
-        
     @pyqtSignature("")
     def trigger(self):
         """
         Slot documentation goes here.
         """
         print "elapse: ", self.tiempo.elapsed() # Intervalo de tiempo desde que se pulsa start en ms
-                
     @pyqtSignature("")    
     def enablebuttons(self):
         
@@ -356,14 +354,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ButtonStop.setEnabled(True)
             
             self.Readtext.setEnabled(False)
-                     
     # metodo para centrar la ventana en la pantalla
     def center(self):        
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())        
-    
     def showTime(self):
     #Show Current Time in "hh:mm:ss" format
         b = self.tiempo.currentTime().toString(str("hh:mm:ss"))
@@ -391,13 +387,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.relojout.setText('Start T')
             
         self.tempoProvaout.setText('%02d:%02d' % (minutesP, secondsP))
-
-    
     def readADC(self):
         #read Adc
         value = ADC.read("P9_33") * 1.8 #volts
         self.emgRead.append(value)
-        
     def plotGraph(self):
         if self.plotEMG.isChecked() : 
             print "plot emg"
@@ -413,8 +406,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.totalrr != []: # si hay nada almacenado en emgRead no graficar
                 self.p.setXRange(0, len(self.totalrr) + 1)
                 self.p.setYRange(np.amin(self.totalrr) - 50, np.amax(self.totalrr) + 50)
-                self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg
-            
+                self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg   
     def pauseEmg(self):
         #Pausar captura EMG
         if self.adctimer.isActive() == True:
@@ -423,8 +415,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         elif self.adctimer.isActive() == False:
             self.adctimer.start()
-            self.pauseEmgButton.setText('Pausar Emg')
-        
+            self.pauseEmgButton.setText('Pausar Emg') 
     def resetAll(self):
         global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
 
@@ -433,8 +424,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
         rr_end=0; rr_value=0; rr_mseg=0;rr_med_temp=0;
         rr_med_actual=0; bpm=0; rr_med_ant=0 ; bpmt = 0
-        self.temporizador = 180 # segundos
-            
+        self.temporizador = 180 # segundos 
     # Inicializar la comunicacion con el arduino
     def initSerial(self):        
         tmp = 1
@@ -464,7 +454,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.arduinoLabel.setText("Arduino Ok!")
                 loopOn = 0
             time.sleep(.5)
-            
     def imusRead(self):
         # realiza lectura de los sensores
         
@@ -480,8 +469,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(0,len(self.splitString)-1):
             # convertir string to float y despues float to int
             self.splitAngulos[i]=int((float(self.splitString[i]))) 
-            
-        # Comparar valores de las referencias
+        
+        
+        posicionAnterior1 = self.posicion1 # no ha calculado la nueva posicion
+        posicionAnterior2 = self.posicion2 # no ha calculado la nueva posicion
+        
+        # Comparar valores de las referencia 1 y 2
         if self.swith == 2:
             #hacer diferencia de la posicion de referencia vs la actual
             print " "
@@ -501,12 +494,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             if kref1 == 14:
                 print "Posicion 1 On"
+                self.posicion1 = True
+            else:
+                self.posicion1 = False # reseteo las posiciones
+                
             if kref2 == 14 :
                 print "Posicion 2 On"
-                
+                self.posicion2 = True
+            else:
+                self.posicion2 = False #reseteo la posicion
+        
+            posicionActual1 = self.posicion1
+            posicionActual2 = self.posicion2
+            
+            #-------------------------------------------------------------------------
+            # definir estado de la posicion 1, si ingresa, si sale o si se mantiene
+            if posicionAnterior1 == True and posicionActual1 == False:
+                print "Salio de la posicion1"
+            elif posicionAnterior1 == False and posicionActual1 == True:    
+                print "Entro a la posicion"
+                print "Activar EMG"
+                print "Guardar el elapse time on"
+            elif posicionAnterior1 == True and posicionActual1 == True:
+                print "Mantiene la posicion"
+            elif posicionAnterior1 == False and posicionActual1 == False:
+                print "No entro a la posicion1"
+            #-------------------------------------------------------------------------    
+            # definir estado de la posicion 2, si ingresa, si sale o si se mantiene
+            if posicionAnterior2 == True and posicionActual2 == False:
+                print "Salio de la posicion2"
+                print "desactivar EMG"
+                print "guardar elapse time off"
+            elif posicionAnterior2 == False and posicionActual2 == True:    
+                print "Entro a la posicion2"            
+            elif posicionAnterior2 == True and posicionActual2 == True:
+                print "Mantiene la posicion2"
+                # si se mantiene 3 veces guardar la posicion en un archivo
+                # Guardar posicion de tiro en un archivo
+            elif posicionAnterior2 == False and posicionActual2 == False:
+                print "No entro a la posicion2"
+            #-------------------------------------------------------------------------        
         #print "Out"
         self.data2 = []
-        
     #verificar status de la conexion de los sensores    
     def imuStatus(self):
            
@@ -524,7 +553,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             elif (self.splitSensores[i] == self.sensoresBad[i]):
                 print "Verificar Conexion del sensor ", i+1             
         self.data1 = [] # resetear data 1
-        
     @pyqtSignature("")
     def takePosition(self):
         """
