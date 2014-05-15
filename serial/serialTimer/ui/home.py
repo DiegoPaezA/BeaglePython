@@ -139,8 +139,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(0,len(self.splitString)-1):    
             self.splitAngulos[i]=(float(self.splitString[i]))
             
-        print "---------------------------------------------------------------"    
+        print "----------S1---------------------------------"    
         print self.splitAngulos[0], self.splitAngulos[1],self.splitAngulos[2]
-        print "---------------------------------------------------------------"
+        print "---------------------------------------------"
+        print "----------S2---------------------------------"    
+        print self.splitAngulos[3], self.splitAngulos[4],self.splitAngulos[5]
+        print "---------------------------------------------"
+        print "----------S3---------------------------------"    
+        print self.splitAngulos[6], self.splitAngulos[7],self.splitAngulos[8]
+        print "---------------------------------------------"
+        print "----------S4---------------------------------"    
+        print self.splitAngulos[9], self.splitAngulos[10],self.splitAngulos[11]
+        print "---------------------------------------------"
         
         self.data2 = []
