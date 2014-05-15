@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Tasks SYSTEM "Tasks-5.1.dtd">
+<!-- eric5 tasks file for project controlDeportivo -->
+<!-- Saved: 2015-02-19, 17:02:59 -->
+<Tasks version="5.1">
+  <ProjectScanFilter></ProjectScanFilter>
+  <Task priority="1" completed="False" type="1">
+    <Summary>TODO: not implemented yet</Summary>
+    <Description></Description>
+    <Created>2014-12-25, 18:34:11</Created>
+    <Resource>
+      <Filename>ui/home.py</Filename>
+      <Linenumber>173</Linenumber>
+    </Resource>
+  </Task>
+</Tasks>
