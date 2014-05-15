@@ -120,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.datoplotpith = []
         self.datoplotroll = []
         
-        self.posicion1 = False
+        self.posicion1 = False #bandera posiciones
         self.posicion2 = False
         
         self.swith = 0 # swith referencias
@@ -138,13 +138,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Inicializar conexion con arduino
         self.initSerial() # verifica la conexion con arduino
-<<<<<<< HEAD
-    #------------------------------------------------------------------------------
-# Fin inicializacion de la clase-------------------------------------------------------------
-=======
-       #------------------------------------------------------------------------------
 # Fin inicializacion del Constructor-------------------------------------------------------------
->>>>>>> 05233a52476ba26b50b743b0f851154ca9eb2ea2
+
         
     @pyqtSignature("")
     def getRR(self,rrint):  
@@ -484,7 +479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #hacer diferencia de la posicion de referencia vs la actual
             print " "
             print " "
-            ref = 7 # +- 7 grados de aceptacion
+            ref = 10 # +- 7 grados de aceptacion
             kref1 = 0
             kref2 = 0
             for i in range(0,len(self.splitAngulos)):    
@@ -516,10 +511,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # definir estado de la posicion 1, si ingresa, si sale o si se mantiene
             if posicionAnterior1 == True and posicionActual1 == False:
                 print "Salio de la posicion1"
-            elif posicionAnterior1 == False and posicionActual1 == True:    
-                print "Entro a la posicion"
                 print "Activar EMG"
                 print "Guardar el elapse time on"
+            elif posicionAnterior1 == False and posicionActual1 == True:    
+                print "Entro a la posicion"
             elif posicionAnterior1 == True and posicionActual1 == True:
                 print "Mantiene la posicion"
             elif posicionAnterior1 == False and posicionActual1 == False:
