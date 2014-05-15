@@ -6,20 +6,29 @@ __author__ = 'diegopaez'
 import Adafruit_BBIO.UART as UART
 import serial as sc
 import time 
-import numpy as np 
+import numpy as np
+
 UART.setup("UART1")
-
-
 arduino = sc.Serial(port = "/dev/ttyO1", baudrate=9600,timeout = .5)
 arduino.close()
 arduino.open()
 
-
+    
 #-----
 data1 = []
 data2 = []
 data3 = []
 data4 = []
+
+numSensores = 7
+numAngulos = 4 # w,x,y,z 
+totalAngulos = numAngulos * numSensores # total angulos leidos
+sensoresOk = np.array(['$S1O', '$S2O', '$S3O', '$S4O', '$S5O', '$S6O', '$S7O'])
+sensoresBad = np.array(['$S1B', '$S2B', '$S3B', '$S4B', '$S5B', '$S6B', '$S7B'])
+
+posicionZero = np.zeros((numSensores, numAngulos))
+splitAngulos = np.zeros(totalAngulos)
+splitSensores = [] # Verificar la conexion de los sensores
 
 
 tmp = 1
@@ -50,23 +59,35 @@ while loopOn == 1:
 
 
     while tmp == 0:
-
+        
         user = int(raw_input("Ingrese 1 para Validar Conexion o 2 Leer Angulos : "))
         if user == 1:
             arduino.flushInput()
-            print "$$$$"
             arduino.write("$$$$")
             time.sleep(.1)
-            print arduino.readline()
-            # data1.append(arduino.readline())
+            data1.append(arduino.readline())
+            splitSensores = (data1[0].split(","))     #sensores
+            # Verificar conexion de los sensores
+            for i in range(0,len(splitSensores)-1):
+                if (splitSensores[i] == sensoresOk[i]):
+                    print "Sensor ", i+1, " Conexion Ok!"
+                elif (splitSensores[i] == sensoresBad[i]):
+                    print "Verificar Conexion del sensor ", i+1             
+            data1 = [] # resetear data 1 
 
         elif user == 2:
             
             arduino.flushInput()
             arduino.write("$PRI")
             
-            data1.append(arduino.readline())
+            data2.append(arduino.readline())
+            
+            splitString = (data2[0].split(",")) #angulos separados por string
+
+            for i in range(0,len(splitString)-1):    
+                splitAngulos[i]=(float(splitString[i]))
             print "Lectura Ok!"
+            
             
         elif user == 3:
             tmp = 1
@@ -76,10 +97,6 @@ while loopOn == 1:
 # print data1, "\n", data2, "\n", data3
 print "Fin"
 
-'''
-for i in range(0,(len(data3)-1)):
-    ((re.split(',', data3[i])))
-'''
-print data1
-np.savetxt('angulos.txt', data1, fmt= '%s')
+print splitAngulos
+np.savetxt('angulos.txt', splitAngulos, fmt= '%10.4f')
 arduino.close()
