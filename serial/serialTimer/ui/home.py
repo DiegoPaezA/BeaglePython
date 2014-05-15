@@ -42,22 +42,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ButtonStop.clicked.connect(self.stop)
         self.imustatusButton.clicked.connect(self.imuStatus)
         self.imustatusButton.setText('Take Position 1')    
-
         
         self.plotButton.clicked.connect(self.plotGraph)
         self.p =self.plot 
         self.curve1 = self.p.plot()
         self.curve2 = self.p.plot()
-
-
-
-                
+        
         # crear timer
         #Creo mi Timer y lo conecto a una funcion
         self.imustimer = QtCore.QTimer()
         QtCore.QObject.connect(self.imustimer, QtCore.SIGNAL("timeout()"), self.imusRead)
         self.imustimer.setInterval(100)
-        
         
         #----------------------
         # Configurar Serial
@@ -67,10 +62,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Inicializar conexion con arduino
         self.initSerial() # verifica la conexion con arduino
-
-        
-
-        
         #variables para leer sensores imus
         self.data1 = [] # lista para verificar la conexion de los sensores
         self.data2 = [] # lista para leer los angulos de los sensores
@@ -90,11 +81,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.splitAngulosRef1 = np.zeros(self.totalAngulos)
         self.splitAngulosRef2 = np.zeros(self.totalAngulos)
         self.splitSensores = [] # Verificar la conexion de los sensores
-       
-        
-        
-        
-    # metodo para centrar la ventana en la pantalla
+
+#-----------------------------------------------------------------------------------------------------
+    # Inicializar la comunicacion con el arduino
     def initSerial(self):        
         tmp = 1
         loopOn = 1
@@ -124,7 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             time.sleep(.5)
             
         
-    # metodo Verificar la conexion con el arduino
+    # metodo Para centrar la ventana
     def center(self):        
         qr = self.frameGeometry()
         cp = QtGui.QDesktopWidget().availableGeometry().center()
@@ -192,7 +181,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data2 = []
         
     def imuStatus(self):
-        # Verificando status de conexion de los sensores
+        # Verificando status de conexion de los sensores Trigger
         print "-----in"
         
         if self.swith == 0 :
