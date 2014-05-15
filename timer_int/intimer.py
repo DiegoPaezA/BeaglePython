@@ -15,7 +15,7 @@ def setInterval(interval):
                     function(*args, **kwargs)
 
             t = threading.Thread(target=loop)
-            t.daemon = True  # stop if the program exits
+#            t.daemon = True  # stop if the program exits
             t.start()
             return stopped
         return wrapper
