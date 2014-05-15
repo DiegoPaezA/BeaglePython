@@ -60,14 +60,6 @@ while loopOn == 1:
             print arduino.readline()
             # data1.append(arduino.readline())
 
-    #    elif user == 2:
-    #        print "$CAL"
-    #        arduino.flushInput()
-    #        arduino.write("$CAL")
-    #        time.sleep(.1)
-    #        print arduino.readline()
-            #data2.append(arduino.readline())
-
         elif user == 2:
             
             arduino.flushInput()
