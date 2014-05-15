@@ -336,10 +336,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-		# Agrega tiempo de elapse al vector de triggers 
+        # Agrega tiempo de elapse al vector de triggers
         self.timeVectorOn.append(self.tiempo.elapsed())
-        if self.activarIMUS.isChecked() == True: 
-			self.savePosition()
+        if self.activarIMUS.isChecked() == True:
+            self.savePosition()
 		
     @pyqtSignature("")
     def enablebuttons(self):
