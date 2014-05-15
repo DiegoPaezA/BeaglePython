@@ -17,11 +17,6 @@ import Adafruit_BBIO.ADC as ADC
 import time, math, os, sys
 import numpy as np
 import datetime
- 
-
-
-Vrr_inicial=np.zeros(50)
-Vrr_update = np.zeros(5)
 
 # Inicializar Variables
 n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
@@ -59,9 +54,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         
         self.totalrr=[]         # dynamic array
-        self.rrshot=[]          # dynamic array
+        self.rrtriger = []
         self.shootresult = []     # dynamic array
         self.trigerflag = 0
+        self.tflag = 0
         self.temporizador = 180 # segundos
         self.tempoProva = [0] 
         self.emgRead = []
@@ -175,9 +171,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print "rr_mseg ---> ", rr_mseg
                 
                 self.totalrr.append(rr_mseg) # crear vector con intervalos rr
-            
-                if self.trigerflag == 1:            
-                    self.rrshot.append(rr_mseg) # crear vector con intervalos rr del tiro
+                self.rrtriger.append(rr_mseg) # crear vector con intervalos + triger 1
+                
+                #if self.trigerflag == 1:            
+                #    self.rrshot.append(rr_mseg) # crear vector con intervalos rr del tiro
                 
                 self.labelintervaloRR.setText('')
                 self.labelbpsout.setText('')
@@ -225,9 +222,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # clear emg & vfc
         self.totalrr = []       # clear total 
+        self.rrtriger = []
         self.emgRead = []       # clear total
         
         self.plotButton.setEnabled(False) # desactiva el boton de plot
+        self.ButtonStart.setEnabled(False) # desactiva boton start
         
         
         
@@ -247,7 +246,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #inicializar thread de interrupcion
             GPIO.remove_event_detect("P9_12")
             np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i') # salvar archivo rr total
-            
+            if self.tflag == 1:
+                np.savetxt('rrtriger' + str(self.dataread) + horaActual + '.txt', self.rrtriger, fmt='%i') # salvar archivo rr total
+                        
         else:
             print "VFC inactivo"
             
@@ -285,28 +286,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
+        self.tflag = 1 # triger fue ejecutado, salvar archivos
+        
         if self.trigerflag == 0: # inicia la captura del tiro
                 self.trigerflag = 1
                 self.ButtonTrigeron.setText('Triger Shot Stop')
                 self.ButtonStop.setEnabled(False)
                 self.emgRead.append(1) # agrego marcador al vector de emg
+                self.rrtriger.append(1) # agrego marcador al vector de emg
                 print "Triger Shot Start"
                 
         elif self.trigerflag == 1: # salva el archivo con los datos capturados
                 self.trigerflag = 0
                 
+                self.emgRead.append(1) # agrego marcador al vector de emg
+                self.rrtriger.append(1) # agrego marcador al vector de vfc triger
+                print "Triger Shot Stop"
+                
+                self.ButtonTrigeron.setText('Triger Shot Start')
+                
                 text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
                 if ok:
-                    self.readResultado.setText(str(text))
                     self.shootresult.append(int(str(text)))
                 
-                horaActual = str(datetime.datetime.now())
-                np.savetxt('shot' + str(self.dataread) + horaActual + '.txt', self.rrshot,fmt='%i')
-                self.rrshot = [] # clear rrshot para el proximo shoot
+                self.emgRead.append(1) # agrego marcador al vector de emg
+                self.rrtriger.append(1) # agrego marcador al vector de vfc triger
                 
                 self.ButtonTrigeron.setText('Triger Shot Start')
                 self.ButtonStop.setEnabled(True)
-                print "Triger Shot Stop"
                 
 
     @pyqtSignature("")    
