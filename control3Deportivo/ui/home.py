@@ -538,6 +538,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Guardar posicion de tiro en un archivo
             elif posicionAnterior2 == False and posicionActual2 == False:
                 print "No entro a la posicion2"
+                
             #-------------------------------------------------------------------------        
         #print "Out"
         self.data2 = []
