@@ -315,12 +315,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #desactivar salvar resultado
         if self.shootresult != []:
             np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i') # salvar resultado
-        
+        """
         if self.timeVectorOn != [] and self.timeVectorOff != []:
             np.savetxt('vectorTiempoOn' + str(self.dataread) + horaActual + '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
             np.savetxt('vectorTiempoOff' + str(self.dataread) + horaActual + '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
-        self.shootresult = []   # clear resultado    
-        """
+        
+        #self.shootresult = []   # clear resultado    
+        
         self.timeVectorOn = []
         self.timeVectorOff = []
         self.posicioncounter = 0 # reiniciar contador de tiros
