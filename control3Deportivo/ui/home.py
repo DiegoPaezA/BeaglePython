@@ -5,7 +5,7 @@
 # Developer: Diego R. Paez Ardila
 # Lugar: IEB-UFSC - Brasil
 # Estatus : Integración modulo de movimiento
-# update : 16,marzo,2015
+# update : 17,marzo,2015
 """
 Module implementing MainWindow.
 """
@@ -62,6 +62,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
         self.pauseEmgButton.clicked.connect(self.pauseEmg) #
         
+        self.ButtonPosition.clicked.connect(self.takePosition) #
+
+        
         self.totalrr=[]         # dynamic array
         self.rrtriger = []
         self.shootresult = []     # dynamic array
@@ -71,7 +74,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tempoProva = [0] 
         self.emgRead = []
         
-        self.tiempo = QtCore.QTime() # lector del tiempo actual del sistema
+        self.tiempo = QtCore.QTime() # lector del tiempo actual del sistema Y vector de tiempo
+        self.timeVectorOn = [] #
+        self.timeVectorOff = [] #
         
         # crear timer Read ADC
         #Creo mi Timer y lo conecto a una funcion
@@ -114,6 +119,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data2 = [] # lista para leer los angulos de los sensores
         self.datoplotpith = []
         self.datoplotroll = []
+        
+        self.posicion1 = True
+        self.posicion2 = False
         
         self.swith = 0 # swith referencias
         self.numSensores = 7
@@ -228,7 +236,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resetAll()
         self.resetButton.setEnabled(False)
         
-        
+        self.tiempo.start() # inicia vector de tiempo para guardar interrupcion de tiro
         
         if self.activarVFC.isChecked() == True:  # True Activo, False no activo
             #inicializar thread de interrupcion
@@ -244,7 +252,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         if self.activarIMUS.isChecked() == True:   # True Activo, False no activo
             self.imustimer.start() # Activar lectura de sensores
-            self.ButtonTrigeron.setEnabled(True) #activar boton tomar posicion
+            self.ButtonPosition.setEnabled(True) #activar boton tomar posicion
             self.imuStatus() # Verificar status de los sensores
         else:
             print "IMUS inactivos"      
@@ -313,48 +321,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.ButtonStart.setEnabled(False)
         self.ButtonStop.setEnabled(False)
-        self.ButtonTrigeron.setEnabled(False)
+        self.ButtonPosition.setEnabled(False)
         self.Readtext.clear()  
         self.Readtext.setEnabled(True)
         
         self.plotButton.setEnabled(True) # Activa el boton de plot
         self.resetButton.setEnabled(True)
-        self.showtimer.stop() # parar Timer
-        np.savetxt('tempoProvaSeg' + str(self.dataread) + horaActual + '.txt', self.tempoProva, fmt='%i') # salvar tiempo de prueba
+        self.showtimer.stop() # parar Timer que muestra el tiempo
+        #np.savetxt('tempoProvaSeg' + str(self.dataread) + horaActual + '.txt', self.tempoProva, fmt='%i') # salvar tiempo de prueba
         
     @pyqtSignature("")
-    def on_ButtonTrigeron_clicked(self):
+    def trigger(self):
         """
         Slot documentation goes here.
         """
-        self.tflag = 1 # triger fue ejecutado, salvar archivos
-        
-        if self.trigerflag == 0: # inicia la captura del tiro
-                self.trigerflag = 1
-                self.ButtonTrigeron.setText('Triger Shot Stop')
-                self.ButtonStop.setEnabled(False)
-                self.emgRead.append(1) # agrego marcador al vector de emg
-                self.rrtriger.append(1) # agrego marcador al vector de emg
-                print "Triger Shot Start"
-                
-        elif self.trigerflag == 1: # salva el archivo con los datos capturados
-                self.trigerflag = 0
-                
-                self.emgRead.append(1) # agrego marcador al vector de emg
-                self.rrtriger.append(1) # agrego marcador al vector de vfc triger
-                print "Triger Shot Stop"
-                
-                self.ButtonTrigeron.setText('Triger Shot Start')
-                
-                text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
-                if ok:
-                    self.shootresult.append(int(str(text)))
-                
-                self.emgRead.append(1) # agrego marcador al vector de emg
-                self.rrtriger.append(1) # agrego marcador al vector de vfc triger
-                
-                self.ButtonTrigeron.setText('Triger Shot Start')
-                self.ButtonStop.setEnabled(True)
+        print "elapse: ", self.tiempo.elapsed() # Intervalo de tiempo desde que se pulsa start en ms
                 
     @pyqtSignature("")    
     def enablebuttons(self):
@@ -414,7 +395,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def readADC(self):
         #read Adc
-        value = ADC.read("P9_33") * 1.8
+        value = ADC.read("P9_33") * 1.8 #volts
         self.emgRead.append(value)
         
     def plotGraph(self):
@@ -500,7 +481,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # convertir string to float y despues float to int
             self.splitAngulos[i]=int((float(self.splitString[i]))) 
             
-        print self.splitAngulos
         # Comparar valores de las referencias
         if self.swith == 2:
             #hacer diferencia de la posicion de referencia vs la actual
@@ -521,7 +501,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             if kref1 == 14:
                 print "Posicion 1 On"
-            elif kref2 == 14 :
+            if kref2 == 14 :
                 print "Posicion 2 On"
                 
         #print "Out"
@@ -545,6 +525,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print "Verificar Conexion del sensor ", i+1             
         self.data1 = [] # resetear data 1
         
+    @pyqtSignature("")
+    def takePosition(self):
+        """
+        Slot documentation goes here.
+        """
+        #print "elapse: ", self.tiempo.elapsed() # Intervalo de tiempo desde que se pulsa start en ms
+        
+        print "-----in"
+        
+        if self.swith == 0 :
+            for i in range(0,len(self.splitAngulos)):    
+                self.splitAngulosRef1[i]=self.splitAngulos[i]
+            self.swith = 1
+            self.ButtonPosition.setText('Take Position 2')
+
+        elif self.swith == 1:
+            for i in range(0,len(self.splitAngulos)):    
+                self.splitAngulosRef2[i]=self.splitAngulos[i]
+            self.swith = 2
+            self.ButtonPosition.setText('Reset Position')
+        elif self.swith == 2:
+            self.swith = 0
+            self.ButtonPosition.setText('Take Position 1')    
 
 
 
