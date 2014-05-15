@@ -77,7 +77,7 @@ def getRR(int):
        rr_start=rr_end 
        totalrr.append(rr_value)
        
-       np.savetxt('totalrr.csv', totalrr, fmt='%10.4f')
+       np.savetxt('totalrr.txt', totalrr, fmt='%10.4f')
        # print("rr_value Time: ", rr_value)
 
     return  
