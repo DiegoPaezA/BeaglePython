@@ -174,8 +174,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             
         
-        self.datoplotpith.append(self.splitAngulos[0])
-        self.datoplotroll.append((self.splitAngulos[1]))   
+        self.datoplotpith.append(self.splitAngulos[5])
+        self.datoplotroll.append((self.splitAngulos[6]))   
            
         
         self.data2 = []
