@@ -340,7 +340,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timeVectorOn.append(self.tiempo.elapsed())
         if self.activarIMUS.isChecked() == True:
             self.savePosition()
-		
+        else: print "imus no activos"    
+
     @pyqtSignature("")
     def enablebuttons(self):
 
@@ -504,7 +505,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def crearDir(self):
         self.directorioOriginal = os.getcwd()
-        carpeta = "control4Deportivo/" +  str(self.dataread)
+        carpeta = "control5Deportivo/" +  str(self.dataread)
 
         directorio = os.path.join(os.pardir, carpeta)
         if not os.path.isdir(directorio):
