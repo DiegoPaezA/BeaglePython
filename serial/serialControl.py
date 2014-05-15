@@ -4,12 +4,25 @@
 __author__ = 'diegopaez'
 
 import Adafruit_BBIO.UART as UART
+from bbio import *
 import serial as sc
 import time 
 import numpy as np
 
+
+RST = GPIO0_4
+pinMode(RST, OUTPUT)
+#---Reset Arduino
+digitalWrite(RST, HIGH)
+time.sleep(1)
+digitalWrite(RST, LOW)
+time.sleep(1)
+print "Wait 8 Seg Until Reset"
+time.sleep(8) #wait until reset
+
+
 UART.setup("UART1")
-arduino = sc.Serial(port = "/dev/ttyO1", baudrate=9600,timeout = .5)
+arduino = sc.Serial(port = "/dev/ttyO1", baudrate=115200,timeout = .5)
 arduino.close()
 arduino.open()
 
@@ -37,9 +50,9 @@ off_time = 0
 start_time = time.time()
 while loopOn == 1:
     
-    print "Waiting For Arduino..."
+    #print "Waiting For Arduino..."
     line = arduino.readline()
-    # print line
+    print line
     #----------------------------------
     #Calcula intervalo
     loop_time = time.time()
@@ -48,6 +61,7 @@ while loopOn == 1:
     # print off_time
     if line == "$$\n":
         arduino.write("$")
+        print "Arduino Reset Ok!!"
         tmp = 0
         
     #Espera 3 seg y si no recibe nada del arduino ingresa al loop    
@@ -97,6 +111,6 @@ while loopOn == 1:
 # print data1, "\n", data2, "\n", data3
 print "Fin"
 
-print splitAngulos
-np.savetxt('angulos.txt', splitAngulos, fmt= '%10.4f')
+#print splitAngulos
+#np.savetxt('angulos.txt', splitAngulos, fmt= '%10.4f')
 arduino.close()

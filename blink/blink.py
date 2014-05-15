@@ -1,20 +1,24 @@
 import Adafruit_BBIO.GPIO as GPIO
 import time
- 
-GPIO.setup("P8_10", GPIO.OUT)
-GPIO.setup("P8_12", GPIO.OUT)
+from bbio import *
 
-GPIO.setup("P9_18", GPIO.OUT)
+LED = GPIO0_4
+pinMode(LED, OUTPUT)
 
-GPIO.output("P9_18", GPIO.LOW)
-time.sleep(5)
+#GPIO.setup("P8_10", GPIO.OUT)
+#GPIO.setup("P8_12", GPIO.OUT)
+GPIO.setup("P9_16", GPIO.OUT)
 
-''' 
+#GPIO.output("P9_18", GPIO.LOW)
+#time.sleep(5)
+
 while True:
-    GPIO.output("P8_10", GPIO.HIGH)
-    GPIO.output("P8_12", GPIO.LOW)
+    GPIO.output("P9_16", GPIO.HIGH)
+    digitalWrite(LED, HIGH)
+  
+    #GPIO.output("P8_12", GPIO.LOW)
     time.sleep(0.5)
-    GPIO.output("P8_10", GPIO.LOW)
-    GPIO.output("P8_12", GPIO.HIGH)
+    digitalWrite(LED, LOW)
+    GPIO.output("P9_16", GPIO.LOW)
+    #GPIO.output("P8_12", GPIO.HIGH)
     time.sleep(0.5)
-'''

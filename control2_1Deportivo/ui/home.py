@@ -17,6 +17,7 @@ from PyQt4 import QtCore, QtGui
 from Ui_home import Ui_MainWindow
 
 import Adafruit_BBIO.GPIO as GPIO
+from bbio import *
 import Adafruit_BBIO.ADC as ADC
 import Adafruit_BBIO.UART as UART
 import serial as sc
@@ -31,6 +32,8 @@ rr_end=0; rr_value=0; rr_mseg=0;rr_med_temp=0; rr_med_actual=0; bpm=0; rr_med_an
 
 # Configurar Pines de entrada y salida
 GPIO.setup("P9_12", GPIO.IN)
+RST = GPIO0_4
+pinMode(RST, OUTPUT)
 
 # Configurar ADC y serial 
 ADC.setup()
@@ -105,6 +108,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QtCore.QObject.connect(self.imustimer, QtCore.SIGNAL("timeout()"), self.imusRead)
         self.imustimer.setInterval(100)
         
+        #-------------------------------------------------------------------------
+        #reset arduino
+        self.resetArduino()
         #------------------------------------------------------------------------------
         # Configurar Serial
         self.arduino = sc.Serial(port = "/dev/ttyO1", baudrate=115200,timeout = .5)
@@ -459,7 +465,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         while loopOn == 1:
             print "Waiting For Arduino..."
             line = self.arduino.readline()
-            # print line
+            #print line
             #----------------------------------
             #Calcula intervalo
             loop_time = time.time()
@@ -468,13 +474,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # print off_time
             if line == "$$\n":
                 self.arduino.write("$")
-                tmp = 0
+                self.arduinoLabel.setText("Arduino rst Ok!")
+                print "rst OK!!"
+                print "Go into it!"
+                loopOn = 0
                 
             #Espera 2 seg y si no recibe nada del arduino ingresa al loop    
             elif off_time >= 2:
                 print "Arduino is Runing!"
-                tmp = 0
-                off_time = 0
                 print "Go into it!"
                 self.arduinoLabel.setText("Arduino Ok!")
                 loopOn = 0
@@ -512,5 +519,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #horaActual = str(datetime.datetime.now())
         horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
         np.savetxt('position' + str(self.dataread) + horaActual + '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
+    
+    def resetArduino(self):
+        #---Reset Arduino
+        digitalWrite(RST, HIGH)
+        time.sleep(1)
+        digitalWrite(RST, LOW)
+        time.sleep(1)
+        print "Wait 8 Seg Until Reset"
+        print ""
+        time.sleep(8) #wait until reset
     
     
