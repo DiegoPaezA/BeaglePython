@@ -3,7 +3,7 @@
 # Software para captura fisiologica, no incluye el procesamiento
 # update 16,marzo,2015
 # Diego R. Paez Ardila
-# IEB-UFSC - Brasil
+# Ubicacion: IEB-UFSC - Brasil
 # Estatus : evolucion a version 3, donde se incluira el modulo
 #           de movimiento y procesamento de las señales adquiridas
 """
