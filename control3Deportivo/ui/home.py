@@ -2,6 +2,8 @@
 
 """
 Module implementing MainWindow.
+
+Diego Páez
 """
 
 from PyQt4.QtGui import QMainWindow
