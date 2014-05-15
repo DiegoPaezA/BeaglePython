@@ -5,7 +5,7 @@
 # Developer: Diego R. Paez Ardila
 # Lugar: IEB-UFSC - Brasil
 # Estatus : Integración modulo de movimiento
-# update : 17,marzo,2015
+# update : 19,marzo,2015
 """
 Module implementing MainWindow.
 """
@@ -313,7 +313,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print "EMG Inactivo"
         #---------------------------------------------------------------------------------------------------------------
-               
         if self.shootresult != []:
             np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i') # salvar resultado
         
@@ -512,7 +511,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if posicionAnterior1 == True and posicionActual1 == False:
                 print "Salio de la posicion1"
                 print "Activar EMG"
-                print "Guardar el elapse time on"
+                print "Leer elapse time on"
             elif posicionAnterior1 == False and posicionActual1 == True:    
                 print "Entro a la posicion"
             elif posicionAnterior1 == True and posicionActual1 == True:
@@ -526,7 +525,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print "desactivar EMG"
                 print "guardar elapse time off"
             elif posicionAnterior2 == False and posicionActual2 == True:    
-                print "Entro a la posicion2"            
+                print "Entro a la posicion2"
+                print "Guardar el elapse time on"
             elif posicionAnterior2 == True and posicionActual2 == True:
                 print "Mantiene la posicion2"
                 # si se mantiene 3 veces guardar la posicion en un archivo
@@ -554,6 +554,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             elif (self.splitSensores[i] == self.sensoresBad[i]):
                 print "Verificar Conexion del sensor ", i+1             
         self.data1 = [] # resetear data 1
+    
     @pyqtSignature("")
     def takePosition(self):
         """
