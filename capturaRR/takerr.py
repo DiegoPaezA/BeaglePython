@@ -78,7 +78,7 @@ def getRR(int):
        totalrr.append(rr_value)
        
        np.savetxt('totalrr.txt', totalrr, fmt='%10.4f')
-       # print("rr_value Time: ", rr_value)
+       print("rr_value Time: ", rr_value)
 
     return  
 
@@ -94,7 +94,7 @@ print "El tiempo es : ", stop_time , "Segundos "
 start_time = time.time()
 loop_time=0
 
-GPIO.add_event_detect("P9_12", GPIO.RISING,callback=getRR, bouncetime=50)
+GPIO.add_event_detect("P9_12", GPIO.RISING,callback=getRR, bouncetime=100)
 
 while (loop_time<=stop_time):
 
