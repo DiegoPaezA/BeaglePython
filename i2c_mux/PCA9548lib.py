@@ -21,7 +21,7 @@ class PCA9548 :
   __PCA9548_CH5           = 0x10  # W   ACTIVATION OF CHANNEL 5
   __PCA9548_CH6           = 0x20  # W   ACTIVATION OF CHANNEL 6
   __PCA9548_CH7           = 0x40  # W   ACTIVATION OF CHANNEL 7
-  __PCA9548_CH8           = 0x88  # W   ACTIVATION OF CHANNEL 8
+  __PCA9548_CH8           = 0x80  # W   ACTIVATION OF CHANNEL 8
  
   # Constructor
   def __init__(self, address=0x70, channel=1,debug=False):
