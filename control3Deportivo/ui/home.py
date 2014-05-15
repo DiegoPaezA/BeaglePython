@@ -138,8 +138,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Inicializar conexion con arduino
         self.initSerial() # verifica la conexion con arduino
+<<<<<<< HEAD
     #------------------------------------------------------------------------------
 # Fin inicializacion de la clase-------------------------------------------------------------
+=======
+       #------------------------------------------------------------------------------
+# Fin inicializacion del Constructor-------------------------------------------------------------
+>>>>>>> 05233a52476ba26b50b743b0f851154ca9eb2ea2
         
     @pyqtSignature("")
     def getRR(self,rrint):  
