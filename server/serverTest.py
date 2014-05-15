@@ -7,7 +7,6 @@ import threading
 import time
 import Adafruit_BBIO.GPIO as GPIO
 
-GPIO.setup("P8_10", GPIO.OUT)
 
 PORT_NUMBER = 8080
 blink = True
@@ -98,8 +97,9 @@ def WebServerThread():
 # Runs the web server thread
 thread.start_new_thread(WebServerThread,())		
 
-# Use the L1 led on Daisy11 module
-#ledL1=ablib.Daisy11("D2","L1")
+# Use pin 10 - p8 como salida
+
+GPIO.setup("P8_10", GPIO.OUT)
 
 #Forever loop
 while True:
