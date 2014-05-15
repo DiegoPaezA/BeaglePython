@@ -334,7 +334,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.timeVectorOn != [] and self.timeVectorOff != []:
             np.savetxt('vectorTiempoOn' + str(self.dataread) + horaActual + '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
             np.savetxt('vectorTiempoOff' + str(self.dataread) + horaActual + '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
-            self.calcularPuntosOnOff()  
+            
         
          
         self.shootresult = []   # clear resultado
@@ -377,7 +377,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
                 if ok:
-                    self.shootresult.append(int(str(text)))
+                    if text != "":
+                        self.shootresult.append(int(str(text)))
                 
                 self.ButtonTrigeron.setText('Triger Shot Start')
                 self.ButtonStop.setEnabled(True)
@@ -413,7 +414,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def showTime(self):
     #Show Current Time in "hh:mm:ss" format
         b = self.tiempo.currentTime().toString(str("hh:mm:ss"))
- 
         # print('%02d:%02d' % (minutes, seconds))
         
         # tiempo prueba
@@ -440,11 +440,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def readADC(self):
         #read Adc
-        value = ADC.read("P9_33") * 1.8
+        value = ADC.read("P9_33") * 1.8 # convierte la lectura a tension
         self.emgRead.append(value)
         
     def plotGraph(self):
-
         if self.plotEMG.isChecked() : 
             print "plot emg"
             self.curve2.clear()
@@ -460,10 +459,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.p.setXRange(0, len(self.totalrr) + 1)
                 self.p.setYRange(np.amin(self.totalrr) - 50, np.amax(self.totalrr) + 50)
                 self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg
-                lf = pg.LinearRegionItem([self.localOn[0],self.localOff[0]])
-                hf = pg.LinearRegionItem([self.localOn[1],self.localOff[1]])
-                self.p.addItem(lf)
-                self.p.addItem(hf)
             
     def pauseEmg(self):
         #Pausar captura EMG
@@ -516,31 +511,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def imusRead(self):
         # realiza lectura de los sensores
-        
         self.arduino.flushInput()
         self.arduino.write("$PRI")
             
         self.data2.append(self.arduino.readline())
-        time.sleep(0.1)
-        
-        
         self.splitString = (self.data2[0].split(",")) #angulos separados por string
-        
         for i in range(0,len(self.splitString)-1):
             # convertir string to float y despues float to int
             self.splitAngulos[i]=int((float(self.splitString[i])))    
-        #print "Out"
         self.data2 = []
-    #verificar status de la conexion de los sensores
-    
+        
     def imuStatus(self):
            
-        self.arduino.flushInput()
-        self.arduino.write("$$$$")
+        self.arduino.flushInput() # Limpia el puerto serial
+        self.arduino.write("$$$$") # imprime el comando verificacion de status
         time.sleep(.1)
-        self.data1.append(self.arduino.readline())
-        
-        
+        self.data1.append(self.arduino.readline()) # lee la linea de datos
         self.splitSensores = (self.data1[0].split(","))     #sensores
         # Verificar conexion de los sensores
         for i in range(0,len(self.splitSensores)-1):
@@ -555,38 +541,4 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         horaActual = str(datetime.datetime.now())
         np.savetxt('position' + str(self.dataread) + horaActual + '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
     
-    def calcularPuntosOnOff(self):
-        #pass
-        self.localOn = []
-        k = 0
-        total = 0
-        for i in range(0,len(self.totalrr)):
-            total += self.totalrr[i]
-            if k< len(self.timeVectorOn):
-                if total >= self.timeVectorOn[k]:
-                    self.localOn.append(i)                    
-                    k += 1
-            else:
-                print "no hay mas trigers"
-                
-        self.localOff = []
-        k = 0
-        total = 0
-        for i in range(0,len(self.totalrr)):
-            total += self.totalrr[i]
-            if k< len(self.timeVectorOff):
-                if total >= self.timeVectorOff[k]:
-                    self.localOff.append(i)                    
-                    k += 1
-                    print "k = ", k
-                    print "len vector = " , len(self.timeVectorOff)
-                    print "total = " , total
-            else:
-                print "no hay mas trigers 2"        
-                
-        print "puntos On", self.localOn        
-        print "puntos off", self.localOff    
-                
-        
-        
     
