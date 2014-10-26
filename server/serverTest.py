@@ -66,8 +66,11 @@ class myHandler(BaseHTTPRequestHandler):
 				environ={'REQUEST_METHOD':'POST','CONTENT_TYPE':self.headers['Content-Type'],})
 
 			if (form["cmd"].value=="stop blinking"):
-				print "Stop blinking"
+				print "Stop blinking"				
 				blink=False
+				
+			elif (form["cmd"].value=="Enviar"):
+				print "<p>Testenviart</p>" 	
 			else:
 				blink=True
 				print "Start blinking"
@@ -106,11 +109,13 @@ while True:
 	# Check the blink flag
 	if blink==True:	
 		GPIO.output("P8_10", GPIO.HIGH)
-		print "Led 1 On"
+		
+		#print "Led 1 On"
 		time.sleep(0.2)
 		GPIO.output("P8_10", GPIO.LOW)
 		time.sleep(0.2)
-		print "led 1 off"
+		#print "led 1 off"
 	else: 
 		GPIO.output("P8_10", GPIO.LOW)
-		print "off"
+		
+		#print "off"
