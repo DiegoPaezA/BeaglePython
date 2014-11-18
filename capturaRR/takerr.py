@@ -107,3 +107,4 @@ print "Duracion de la prueba : ", loop_time , "Segundos "
     
 print "Prueba Finalizada"    
        
+GPIO.cleanup()
