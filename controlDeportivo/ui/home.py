@@ -23,7 +23,7 @@ Vrr_update = np.zeros(5)
 
 # Inicializar Variables
 n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
-rr_end=0; rr_value=0; rr_mseg=0; rr_med=0; bpm=0; rr_medt=0 ; bpmt = 0
+rr_end=0; rr_value=0; rr_mseg=0;rr_med_temp=0; rr_med_actual=0; bpm=0; rr_med_ant=0 ; bpmt = 0
 
 # Configurar Pines de entrada y salida
 GPIO.setup("P9_12", GPIO.IN)
@@ -50,11 +50,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.totalrr=[]         # dynamic array
         self.rrshot=[]          # dynamic array
-        self.shootresult=[]          # dynamic array
-        self.trigerflag = 0    
-    
+        self.shootresult=[]     # dynamic array
+        self.trigerflag = 0
+        
+    @pyqtSignature("")
     def getRR(self,rrint):  
-        global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med,rr_medt, bpm , bpmt
+        global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
 
         if (n==0): 
             rr_start = time.time()
@@ -64,48 +65,89 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif (n==1):
             j += 1
             i += 1
+            print "Calibrando"
             
             rr_end = time.time()
             rr_value = rr_end - rr_start 
-            rr_start=rr_end
+            rr_start = rr_end
             rr_mseg = int(rr_value*1000) # ajuste para presentar en segundos
             
             
-            rr_med += rr_mseg
-            bpmt += rr_value
+            rr_med_temp += rr_mseg
+            rr_med_actual = rr_med_temp//j # media
             
-            if i==3:
-               bpm = int(60/(bpmt / 3))
-               i = 0
-               bpmt = 0
-               
-            print ("rr_value Time: ", rr_mseg)
-            
-            # -----------------------
             # Filtro ajuste Media Local
-            #if j==3:
-            #    rr_medt = rr_med/3
-            #    j = 0
-            #    rr_med = 0
-            #-------------------------    
-            #if rr_mseg > rr_medt + 200:
-            #    n = 0
-            #    rr_mseg = rr_medt
-            #-------------------------    
+            if j==3:
+                rr_med_ant = rr_med_actual
+                j = 0
+                i = 0
+                rr_med_actual = 0
+                rr_med_temp = 0
+                n = 2 # sale de etapa de calibracion
+            #-------------------------
+            
+        elif n == 2:
+        
+            j += 1
+            i += 1
             
             
-            self.totalrr.append(rr_mseg) # crear vector con intervalos rr
+            rr_end = time.time()
+            rr_value = rr_end - rr_start 
+            rr_start = rr_end
             
-            if self.trigerflag == 1:            
-                self.rrshot.append(rr_mseg) # crear vector con intervalos rr del tiro
-
+            rr_mseg = int(rr_value*1000) # ajuste para presentar en segundos
             
-
-            self.labelintervaloRR.setText('')
-            self.labelbpsout.setText('')
-            time.sleep(0.01)
-            self.labelbpsout.setText(str(bpm))
-            self.labelintervaloRR.setText(str(rr_mseg))
+            
+            # print "RR Leido ---> ",rr_mseg 
+            
+            if rr_mseg > (rr_med_ant + 300):
+                #  print "--------- rr Descartado"
+                rr_med_actual = 0
+                rr_med_temp = 0
+                j = 0
+                i = 0
+            elif rr_mseg < (rr_med_ant - 300):
+                #  print "--------- rr Descartado"
+                rr_med_actual = 0
+                rr_med_temp = 0
+                j = 0
+                i = 0
+            else:    
+                
+                #  print rr_med_ant
+                rr_med_temp += rr_mseg
+                rr_med_actual = rr_med_temp//j # media
+                
+                
+                # Filtro ajuste Media Local
+                if j==3:
+                  rr_med_ant = rr_med_actual
+                  j = 0
+                  rr_med_actual = 0
+                  rr_med_temp = 0
+                 #-------------------------
+            
+                bpmt += rr_value
+                # --------------------------
+                # Calculo bpm
+                if i==3:
+                    bpm = int(60/(bpmt / 3))
+                    i = 0         
+                    bpmt = 0
+                # -----------------------
+                print "rr_mseg ---> ", rr_mseg
+                
+                self.totalrr.append(rr_mseg) # crear vector con intervalos rr
+            
+                if self.trigerflag == 1:            
+                    self.rrshot.append(rr_mseg) # crear vector con intervalos rr del tiro
+                
+                self.labelintervaloRR.setText('')
+                self.labelbpsout.setText('')
+                time.sleep(0.01)
+                self.labelbpsout.setText(str(bpm))
+                self.labelintervaloRR.setText(str(rr_mseg))
         return  
     
     @pyqtSignature("")
@@ -114,10 +156,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot documentation goes here.
         """
         print "Start captura"
-        GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.getRR, bouncetime=50)
+        GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.getRR, bouncetime=100)
         global n , j
         n = 0
         j = 0
+        i = 0
         
     @pyqtSignature("")
     def on_ButtonStop_released(self):
@@ -129,12 +172,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Guardar archivo con los datos adquiridos
         horaActual = str(datetime.datetime.now())
+        
         np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i')
         
-        np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i')
+        if self.shootresult != []:
+            np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i')
         
-        self.totalrr = [] # clear total rr
-        self.shootresult = [] # clear resultado
+        self.totalrr = []       # clear total rr
+        self.shootresult = []   # clear resultado
         
         self.ButtonStart.setEnabled(False)
         self.ButtonStop.setEnabled(False)
@@ -150,13 +195,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        
-        
         if self.trigerflag == 0: # inicia la captura
                 self.trigerflag = 1
                 self.ButtonTrigeron.setText('Triger Shot Stop')
                 self.ButtonStop.setEnabled(False)
-                #self.readResultado.setEnabled(True)
                 print "Triger Shot Start"
                 
         elif self.trigerflag == 1: # salva el archivo con los datos capturados
@@ -169,13 +211,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 horaActual = str(datetime.datetime.now())
                 np.savetxt('rrshot' + str(self.dataread) + horaActual + '.txt', self.rrshot,fmt='%i')
-
                 self.rrshot = [] # clear total rr
                 
-
                 self.ButtonTrigeron.setText('Triger Shot Start')
                 self.ButtonStop.setEnabled(True)
-
                 print "Triger Shot Stop"
                 
                
