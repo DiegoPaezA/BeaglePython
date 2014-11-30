@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/diegopaez/PycharmProjects/controlDeportivo/ui/home.ui'
 #
-# Created: Fri Nov 28 14:43:23 2014
+# Created: Sat Nov 29 18:41:11 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,12 +26,12 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(636, 544)
+        MainWindow.resize(631, 544)
         MainWindow.setAutoFillBackground(False)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
         self.layoutWidget = QtGui.QWidget(self.centralWidget)
-        self.layoutWidget.setGeometry(QtCore.QRect(100, 10, 390, 75))
+        self.layoutWidget.setGeometry(QtCore.QRect(40, 10, 541, 75))
         self.layoutWidget.setObjectName(_fromUtf8("layoutWidget"))
         self.gridLayout_3 = QtGui.QGridLayout(self.layoutWidget)
         self.gridLayout_3.setMargin(0)
@@ -279,20 +279,16 @@ class Ui_MainWindow(object):
         self.plotVFC.setObjectName(_fromUtf8("plotVFC"))
         self.horizontalLayout_3.addWidget(self.plotVFC)
         self.plotButton = QtGui.QPushButton(self.layoutWidget7)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setWeight(50)
+        self.plotButton.setFont(font)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.horizontalLayout_3.addWidget(self.plotButton)
         self.verticalLayout_3.addLayout(self.horizontalLayout_3)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.label_9 = QtGui.QLabel(self.layoutWidget7)
-        font = QtGui.QFont()
-        font.setPointSize(11)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_9.setFont(font)
-        self.label_9.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_9.setObjectName(_fromUtf8("label_9"))
-        self.verticalLayout_2.addWidget(self.label_9)
         self.plot = PlotWidget(self.layoutWidget7)
         self.plot.setObjectName(_fromUtf8("plot"))
         self.verticalLayout_2.addWidget(self.plot)
@@ -327,7 +323,6 @@ class Ui_MainWindow(object):
         self.plotEMG.setText(_translate("MainWindow", "EMG", None))
         self.plotVFC.setText(_translate("MainWindow", "VFC", None))
         self.plotButton.setText(_translate("MainWindow", "Plot", None))
-        self.label_9.setText(_translate("MainWindow", "Resultado Captura EMG ou VFC", None))
 
 from pyqtgraph import PlotWidget
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#controlDeportivo_V2_
 """
 Module implementing MainWindow.
 """
@@ -49,7 +49,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.center() # Centra la ventana en la pantalla
         
         self.buttongo.clicked.connect(self.enablebuttons)
-        self.plotButton.clicked.connect(self.plotGraph) # 
+        self.plotButton.clicked.connect(self.plotGraph) #
+        self.plotButton.setEnabled(False)
         
         self.totalrr=[]         # dynamic array
         self.rrshot=[]          # dynamic array
@@ -81,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #construir grafica
         self.p =self.plot 
         self.curve1 = self.p.plot()
+        self.curve2 = self.p.plot()
         
     @pyqtSignature("")
     def getRR(self,rrint):  
@@ -130,14 +132,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             # print "RR Leido ---> ",rr_mseg 
             
-            if rr_mseg > (rr_med_ant + 100):
-                #  print "--------- rr Descartado"
+            if rr_mseg > (rr_med_ant + 150):
+                print "--------- rr Descartado"
                 rr_med_actual = 0
                 rr_med_temp = 0
                 j = 0
                 i = 0
-            elif rr_mseg < (rr_med_ant - 100):
-                #  print "--------- rr Descartado"
+            elif rr_mseg < (rr_med_ant - 150):
+                print "--------- rr Descartado"
                 rr_med_actual = 0
                 rr_med_temp = 0
                 j = 0
@@ -160,12 +162,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 bpmt += rr_value
                 # --------------------------
                 # Calculo bpm
-                if i==5:
-                    bpm = int(60/(bpmt / 5))
+                if i==3:
+                    bpm = int(60/(bpmt / 3))
                     i = 0         
                     bpmt = 0
                 # -----------------------
-                #print "rr_mseg ---> ", rr_mseg
+                print "rr_mseg ---> ", rr_mseg
                 
                 self.totalrr.append(rr_mseg) # crear vector con intervalos rr
             
@@ -189,13 +191,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         global n, j, i
         n = 0; j = 0; i = 0
         
+        
+        if self.activarVFC.isChecked() == True:  # True Activo, False no activo
+            #inicializar thread de interrupcion
+            GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.getRR, bouncetime=100)
+        else:
+            print "VFC inactivo"
+                
+        if self.activarEMG.isChecked() == True:   # True Activo, False no activo
+            self.adctimer.start() # Start timer Read adc
+        else:
+            print "EMG inactivo"    
+        
+        if (self.activarVFC.isChecked() == False) and (self.activarEMG.isChecked() == False):
+                print 'activar vfc por defecto'
+                self.activarVFC.setChecked(True)
+                self.activarEMG.setChecked(False)
+                
+                GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.getRR, bouncetime=100)
+            
         print "Start captura"
-        #inicializar thread de interrupcion
-        GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.getRR, bouncetime=100)
-        self.adctimer.start() # Start timer Read adc    
+        
         self.showtimer.start() # Start timer mostrar tiempo
         self.curve1.clear() # clear grafico
+        self.curve2.clear() # clear grafico
         self.tempoProva[0] = 0
+        
+        # clear emg & vfc
+        self.totalrr = []       # clear total 
+        self.emgRead = []       # clear total
+        
+        self.plotButton.setEnabled(False) # desactiva el boton de plot
         
         
         
@@ -207,19 +233,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         print "stop capture"
         
-        GPIO.remove_event_detect("P9_12")
         
-        # Guardar archivo con los datos adquiridos
         horaActual = str(datetime.datetime.now())
         
-        np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i') # salvar archivo rr total
-        np.salsvetxt('Emg' + str(self.dataread) + horaActual + '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
-        
+        #----------------------------VFC-------------------------------------------------------------------------------
+        if self.activarVFC.isChecked() == True:  # True Activo, False no activo
+            #inicializar thread de interrupcion
+            GPIO.remove_event_detect("P9_12")
+            np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i') # salvar archivo rr total
+            
+        else:
+            print "VFC inactivo"
+            
+        #----------------------------EMG--------------------------------------------------------------------------------
+        if self.activarEMG.isChecked() == True: 
+            self.adctimer.stop() # parar timer 
+            np.savetxt('Emg' + str(self.dataread) + horaActual + '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
+        else:
+            print "EMG Inactivo"
+        #---------------------------------------------------------------------------------------------------------------
         
         if self.shootresult != []:
             np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i') # salvar resultado
         
-        self.totalrr = []       # clear total rr
         self.shootresult = []   # clear resultado
         
         
@@ -229,11 +265,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Readtext.clear()  
         self.Readtext.setEnabled(True)
         
-        self.adctimer.stop() # parar timer
-        self.showtimer.stop() # parar Timer
-        self.curve1.setData(self.emgRead) # graficar curva emg
-        self.emgRead = []
+        self.plotButton.setEnabled(True) # Activa el boton de plot
         
+        self.showtimer.stop() # parar Timer
         np.savetxt('tempoProvaSeg' + str(self.dataread) + horaActual + '.txt', self.tempoProva, fmt='%i') # salvar tiempo de prueba
         
 
@@ -326,15 +360,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def readADC(self):
         #read Adc
-        value = ADC.read("P9_33")
+        value = ADC.read("P9_33") * 1.8
         self.emgRead.append(value)
         
     def plotGraph(self):
 
         if self.plotEMG.isChecked() : 
             print "plot emg"
+            self.curve2.clear()
+            if self.emgRead != []: # si hay nada almacenado en emgRead no graficar
+                self.p.setXRange(0, len(self.emgRead) + 1)
+                self.p.setYRange(np.amin(self.emgRead), np.amax(self.emgRead))
+                self.curve2.setData(self.emgRead) # graficar curva emg
+            
         elif self.plotVFC.isChecked() :
-            print "plot VFC"    
+            print "plot VFC"
+            self.curve1.clear()
+            if self.totalrr != []: # si hay nada almacenado en emgRead no graficar
+                self.p.setXRange(0, len(self.totalrr) + 1)
+                self.p.setYRange(np.amin(self.totalrr) - 50, np.amax(self.totalrr) + 50)
+                self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg
+            
 
         
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
+    <width>631</width>
     <height>544</height>
    </rect>
   </property>
@@ -20,9 +20,9 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>40</x>
       <y>10</y>
-      <width>390</width>
+      <width>541</width>
       <height>75</height>
      </rect>
     </property>
@@ -494,6 +494,13 @@
        </item>
        <item>
         <widget class="QPushButton" name="plotButton">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+          </font>
+         </property>
          <property name="text">
           <string>Plot</string>
          </property>
@@ -503,23 +510,6 @@
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Resultado Captura EMG ou VFC</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="PlotWidget" name="plot"/>
        </item>
