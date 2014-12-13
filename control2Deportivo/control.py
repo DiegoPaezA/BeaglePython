@@ -4,7 +4,6 @@
 #
 # Diego R. Paez A.
 # Control Deportivo, Registro VFC e EMG
-#funciones de activar y desactivar registro se encuentran desactivadas, se mejoraran en la version dos
 
 
 

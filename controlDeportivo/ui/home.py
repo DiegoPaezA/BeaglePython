@@ -213,7 +213,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         horaActual = str(datetime.datetime.now())
         
         np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i') # salvar archivo rr total
-        np.salsvetxt('Emg' + str(self.dataread) + horaActual + '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
+        np.savetxt('Emg' + str(self.dataread) + horaActual + '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
         
         
         if self.shootresult != []:

@@ -52,6 +52,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.plotButton.clicked.connect(self.plotGraph) #
         self.plotButton.setEnabled(False)
         
+        self.resetButton.clicked.connect(self.resetAll) #
+        
+        
+        self.pauseEmgButton.clicked.connect(self.pauseEmg) #
+        
+        
         self.totalrr=[]         # dynamic array
         self.rrshot=[]          # dynamic array
         self.shootresult = []     # dynamic array
@@ -83,6 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.p =self.plot 
         self.curve1 = self.p.plot()
         self.curve2 = self.p.plot()
+
         
     @pyqtSignature("")
     def getRR(self,rrint):  
@@ -132,14 +139,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             # print "RR Leido ---> ",rr_mseg 
             
-            if rr_mseg > (rr_med_ant + 150):
-                print "--------- rr Descartado"
+            if rr_mseg > (rr_med_ant + 200):
                 rr_med_actual = 0
                 rr_med_temp = 0
                 j = 0
                 i = 0
-            elif rr_mseg < (rr_med_ant - 150):
-                print "--------- rr Descartado"
+            elif rr_mseg < (rr_med_ant - 200):
                 rr_med_actual = 0
                 rr_med_temp = 0
                 j = 0
@@ -188,9 +193,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        global n, j, i
-        n = 0; j = 0; i = 0
-        
+        #global n, j, i
+        self.resetAll()
+        self.resetButton.setEnabled(False)
         
         if self.activarVFC.isChecked() == True:  # True Activo, False no activo
             #inicializar thread de interrupcion
@@ -200,6 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
         if self.activarEMG.isChecked() == True:   # True Activo, False no activo
             self.adctimer.start() # Start timer Read adc
+            self.pauseEmgButton.setEnabled(True) # activa boton de pause emg
         else:
             print "EMG inactivo"    
         
@@ -249,6 +255,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.activarEMG.isChecked() == True: 
             self.adctimer.stop() # parar timer 
             np.savetxt('Emg' + str(self.dataread) + horaActual + '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
+            self.pauseEmgButton.setEnabled(False) # desactivar boton pause
+            self.pauseEmgButton.setText('Pausar Emg')
         else:
             print "EMG Inactivo"
         #---------------------------------------------------------------------------------------------------------------
@@ -266,7 +274,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Readtext.setEnabled(True)
         
         self.plotButton.setEnabled(True) # Activa el boton de plot
-        
+        self.resetButton.setEnabled(True)
         self.showtimer.stop() # parar Timer
         np.savetxt('tempoProvaSeg' + str(self.dataread) + horaActual + '.txt', self.tempoProva, fmt='%i') # salvar tiempo de prueba
         
@@ -281,6 +289,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.trigerflag = 1
                 self.ButtonTrigeron.setText('Triger Shot Stop')
                 self.ButtonStop.setEnabled(False)
+                self.emgRead.append(1) # agrego marcador al vector de emg
                 print "Triger Shot Start"
                 
         elif self.trigerflag == 1: # salva el archivo con los datos capturados
@@ -299,8 +308,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.ButtonStop.setEnabled(True)
                 print "Triger Shot Stop"
                 
-               
-        
+
     @pyqtSignature("")    
     def enablebuttons(self):
         
@@ -381,6 +389,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.p.setYRange(np.amin(self.totalrr) - 50, np.amax(self.totalrr) + 50)
                 self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg
             
+            
+    def pauseEmg(self):
+        #Pausar captura EMG
+        if self.adctimer.isActive() == True:
+            self.adctimer.stop()
+            self.pauseEmgButton.setText('Ativar Emg')
+            
+        elif self.adctimer.isActive() == False:
+            self.adctimer.start()
+            self.pauseEmgButton.setText('Pausar Emg')
+        
+    def resetAll(self):
+        global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
 
         
+        # reset all Variables
+        n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
+        rr_end=0; rr_value=0; rr_mseg=0;rr_med_temp=0;
+        rr_med_actual=0; bpm=0; rr_med_ant=0 ; bpmt = 0
+        self.temporizador = 180 # segundos
+
+
 
