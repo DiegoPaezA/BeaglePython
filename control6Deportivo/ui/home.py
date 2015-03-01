@@ -60,7 +60,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resetButton.clicked.connect(self.resetAll) #
 
 
-        self.pauseEmgButton.clicked.connect(self.pauseEmg) #
+        #self.pauseEmgButton.clicked.connect(self.pauseEmg) #
         self.savePositionButton.clicked.connect(self.savePosition) #
 
 
@@ -83,8 +83,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.thread = QtCore.QThread()
         self.readADC = ADCRead() # inicializar clase thread
         self.readADC.moveToThread(self.thread)
-        self.thread.started.connect(self.readADC.loop) # start Timer
-
+        self.thread.started.connect(self.readADC.loop)
+        
+        
  
 
         # crear timer show Tiempo
@@ -247,8 +248,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print "VFC inactivo"
 
         if self.activarEMG.isChecked() == True:   # True Activo, False no activo
-            self.adctimer.start() # Start timer Read adc
-            self.pauseEmgButton.setEnabled(True) # activa boton de pause emg
+            self.thread.start() # Worker Thread
+ 
+            #self.pauseEmgButton.setEnabled(True) # activa boton de pause emg
+            print "EMG Activo"
         else:
             print "EMG inactivo"
 
@@ -299,17 +302,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print "VFC inactivo"
         #----------------------------EMG--------------------------------------------------------------------------------
         if self.activarEMG.isChecked() == True:
-            self.adctimer.stop() # parar timer
-            np.savetxt('Emg' + str(self.dataread) +  '.txt', self.emgRead, fmt='%10.4f') # salvar archivo emg
-            self.pauseEmgButton.setEnabled(False) # desactivar boton pause
-            self.pauseEmgButton.setText('Pausar Emg')
+            self.emgRead = self.readADC.stop()
+            self.thread.quit()
+            self.thread.wait()
+            
+            #self.pauseEmgButton.setEnabled(False) # desactivar boton pause
+            #self.pauseEmgButton.setText('Pausar Emg')
         else:
             print "EMG Inactivo"
          #----------------------------IMUS--------------------------------------------------------------------------------
         if self.activarIMUS.isChecked() == True:
             self.imustimer.stop() #Desactivar lectura sensores
         else:
-            print "EMG Inactivo"
+            print "Imus Inactivo"
         #---------------------------------------------------------------------------------------------------------------
 
         if self.timeVectorOn != [] :
@@ -413,15 +418,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.p.setYRange(np.amin(self.totalrr) - 50, np.amax(self.totalrr) + 50)
                 self.curve1.setData(self.totalrr,pen=(200,200,200), symbolBrush=(255,0,0), symbolPen='w', symbolSize = 4) # graficar curva emg
 
-    def pauseEmg(self):
-        #Pausar captura EMG
-        if self.adctimer.isActive() == True:
-            self.adctimer.stop()
-            self.pauseEmgButton.setText('Ativar Emg')
-
-        elif self.adctimer.isActive() == False:
-            self.adctimer.start()
-            self.pauseEmgButton.setText('Pausar Emg')
 
     def resetAll(self):
         global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
@@ -506,7 +502,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def crearDir(self):
         self.directorioOriginal = os.getcwd()
-        carpeta = "control5Deportivo/" +  str(self.dataread)
+        carpeta = "control6Deportivo/" +  str(self.dataread)
 
         directorio = os.path.join(os.pardir, carpeta)
         if not os.path.isdir(directorio):
@@ -514,18 +510,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         os.chdir(directorio)
 
 class ADCRead(QtCore.QObject):
-   def readADC(self):
+    def leerADC(self):
         #read Adc
         value = ADC.read("P9_33") * 1.8 # convierte la lectura a tension
-        #self.emgRead.append(value)
+        #print "Reading ADC"
+        self.emgReadThread.append(value)
+        
     def stop(self):
         self._exit = True
         self.adctimer.stop()
-
+        np.savetxt('emg' +  '.txt', self.emgReadThread, fmt='%10.4f') # salvar archivo emg
+        return self.emgReadThread
+    
     def loop(self):
-        print "hola"
+        print "Inicia Lectura ADC"
+        self.emgReadThread=[]
         self.adctimer = QtCore.QTimer()
         self.adctimer.setSingleShot(False)
-        self.adctimer.timeout.connect(self.readADC)
+        self.adctimer.timeout.connect(self.leerADC)
         self.adctimer.setInterval(4) # Fs= 100Hz = 10ms Fs = 250 Hz = 4ms # Fs = 580 Hz = 1.7ms
         self.adctimer.start()
