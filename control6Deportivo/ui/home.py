@@ -490,7 +490,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "save position"
         self.imusmatrix[:,self.posicioncounter] = self.splitAngulos # agregar angulos a la matrix      
         self.posicioncounter += 1        
-        np.savetxt('position' + str(self.dataread) + "_" +str(self.posicioncounter)+ '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
+        #np.savetxt('position' + str(self.dataread) + "_" +str(self.posicioncounter)+ '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
 
     def resetArduino(self):
         #---Reset Arduino
