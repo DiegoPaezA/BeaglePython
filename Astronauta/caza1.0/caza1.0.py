@@ -82,7 +82,6 @@ class WorkerImu(QtCore.QObject):
         for i in self.data:
             with open("accel.txt", "a") as self.accel:
                 self.accel.write(str(i))
-
         self.ite += 1
         if self.ite == 50:
             print "Read Temperatura"
