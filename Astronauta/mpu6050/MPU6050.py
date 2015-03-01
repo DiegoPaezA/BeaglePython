@@ -35,7 +35,7 @@ from datetime import datetime
 ############################################################################################
 class I2C:
 
-    def __init__(self, address, bus=smbus.SMBus(2)):
+    def __init__(self, address, bus=smbus.SMBus(1)):
         self.address = address
         self.bus = bus
 
