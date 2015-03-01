@@ -2,23 +2,38 @@ import Adafruit_BBIO.GPIO as GPIO
 import time
 from bbio import *
 
-LED = GPIO0_4
-pinMode(LED, OUTPUT)
+#LED1 = GPIO2_12
+#pinMode(LED1, OUTPUT)
 
-#GPIO.setup("P8_10", GPIO.OUT)
-#GPIO.setup("P8_12", GPIO.OUT)
-GPIO.setup("P9_16", GPIO.OUT)
+LED1 = "P8_7"
+GPIO.setup(LED1, GPIO.OUT)
+GPIO.setup("P8_10", GPIO.OUT)
+GPIO.setup("P8_12", GPIO.OUT)
+GPIO.setup("P8_14", GPIO.OUT)
 
+GPIO.setup("P9_30", GPIO.IN)
 #GPIO.output("P9_18", GPIO.LOW)
 #time.sleep(5)
-
+print "Start Blink"
 while True:
-    GPIO.output("P9_16", GPIO.HIGH)
-    digitalWrite(LED, HIGH)
+    GPIO.output(LED1, GPIO.HIGH)
+    GPIO.output("P8_10", GPIO.HIGH)
+    GPIO.output("P8_12", GPIO.HIGH)
+    GPIO.output("P8_14", GPIO.HIGH)
+    #print "High"
+    #digitalWrite(LED1, HIGH)
   
-    #GPIO.output("P8_12", GPIO.LOW)
     time.sleep(0.5)
-    digitalWrite(LED, LOW)
-    GPIO.output("P9_16", GPIO.LOW)
-    #GPIO.output("P8_12", GPIO.HIGH)
+    GPIO.output(LED1, GPIO.LOW)
+    GPIO.output("P8_10", GPIO.LOW)
+    GPIO.output("P8_12", GPIO.LOW)
+    GPIO.output("P8_14", GPIO.LOW)
+    
+    #digitalWrite(LED1, LOW)
+    #print "Low"
     time.sleep(0.5)
+    
+    if GPIO.input("P9_30"):
+        print("HIGH")
+    else:
+        print("LOW")
