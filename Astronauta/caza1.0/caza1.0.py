@@ -4,8 +4,8 @@ import sys,os
 import Adafruit_BBIO.GPIO as GPIO
 from MPUaccel import ReadAccel
 
-GPIO.setup("P9_12", GPIO.IN)
-GPIO.setup("P9_14", GPIO.IN)
+GPIO.setup("P9_24", GPIO.IN)
+GPIO.setup("P9_26", GPIO.IN)
 
 class MicroGravedad(QtCore.QObject):
 
@@ -28,8 +28,8 @@ class MicroGravedad(QtCore.QObject):
         self.crearDir() ## crear directorio
         print "Push Start button"
         
-        GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.start, bouncetime=100)
-        GPIO.add_event_detect("P9_14", GPIO.RISING,callback=self.stop, bouncetime=100)
+        GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=100)
+        GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=100)
         
 
     def start(self,isr): 
@@ -37,7 +37,7 @@ class MicroGravedad(QtCore.QObject):
         print "Start Capture"
         #self.threadadc.start() # Worker Thread
         self.threadimu.start() # Worker Thread
-        GPIO.remove_event_detect("P9_12")
+        GPIO.remove_event_detect("P9_24")
         #-----------------------------------
         return
     def stop(self,isr): 
@@ -80,15 +80,18 @@ class WorkerImu(QtCore.QObject):
         self.data[4] = az
         
         for i in self.data:
-            self.accel.write(str(i))
-        self.accel.write("\n")
-        
+            if self.off == 1:
+                self.accel.write(str(i))
+            elif self.off == 0:
+                print "off Cambio"
+                self.accel.close() #close accel file       
         self.ite += 1
         if self.ite == 50:
             print "Read Temperatura"
             self.ite = 0
+            
     def stop(self):
-        self.accel.close() #close accel file
+        self.off = 0
         self.timer.stop()
         self._exit = True
     def loop(self):
@@ -101,8 +104,9 @@ class WorkerImu(QtCore.QObject):
         self.accel = open("accel.txt", "w")
         self.accel.write("Ax;Ay;Az;")
         self.accel.write("\n")
-        self.data = [0,';',0,';',0,';']
+        self.data = [0,';',0,';',0,';',"\n"]
         self.ite = 0
+        self.off = 1
         
 class WorkerADC(QtCore.QObject):
     def readEcg(self):
@@ -115,6 +119,8 @@ class WorkerADC(QtCore.QObject):
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.readEcg)
         self.timer.start(200)
+        
+        
         
 if __name__ == "__main__":
     
