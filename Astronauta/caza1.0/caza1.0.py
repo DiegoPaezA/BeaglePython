@@ -80,18 +80,16 @@ class WorkerImu(QtCore.QObject):
         self.data[4] = az
         
         for i in self.data:
-            if self.off == 1:
+            with open("accel.txt", "a") as self.accel:
                 self.accel.write(str(i))
-            elif self.off == 0:
-                print "off Cambio"
-                self.accel.close() #close accel file       
+
         self.ite += 1
         if self.ite == 50:
             print "Read Temperatura"
             self.ite = 0
             
     def stop(self):
-        self.off = 0
+        self.accel.close() #close accel file       
         self.timer.stop()
         self._exit = True
     def loop(self):
@@ -104,6 +102,7 @@ class WorkerImu(QtCore.QObject):
         self.accel = open("accel.txt", "w")
         self.accel.write("Ax;Ay;Az;")
         self.accel.write("\n")
+        self.accel.close() #close accel file    
         self.data = [0,';',0,';',0,';',"\n"]
         self.ite = 0
         self.off = 1

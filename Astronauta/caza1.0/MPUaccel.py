@@ -12,7 +12,7 @@ class ReadAccel :
     MPU6050_RA_ACCEL_XOUT_H= 		0x3b
     MPU6050_RA_ACCEL_YOUT_H= 		0x3d
     MPU6050_RA_ACCEL_ZOUT_H= 		0x3f
-    MPU6050_RA_TEMP_OUT_H= 		0x41
+    MPU6050_RA_TEMP_OUT_H= 		    0x41
     MPU6050_RA_ACCEL_CONFIG= 		0x1C
     
     def __init__(self, address=0x68,i2c_bus = 2, Arange =2):
@@ -40,7 +40,6 @@ class ReadAccel :
     
     def setRange(self,Arange = 2):
         #0x00=+/-2 0x08=+/- 4    0x10=+/-8 0x18=+/-16
-        #logger.debug('Accel +/- 2g')
         if Arange ==2:
             data = 0x00
             self.scale = 16384.0
@@ -60,9 +59,9 @@ class ReadAccel :
         accel_yout = self.read_word_2c(self.MPU6050_RA_ACCEL_YOUT_H)
         accel_zout = self.read_word_2c(self.MPU6050_RA_ACCEL_ZOUT_H)
         
-        accel_xout_scaled = accel_xout / 16384.0
-        accel_yout_scaled = accel_yout / 16384.0
-        accel_zout_scaled = accel_zout / 16384.0
+        accel_xout_scaled = accel_xout / self.scale
+        accel_yout_scaled = accel_yout / self.scale
+        accel_zout_scaled = accel_zout / self.scale
         
         return accel_xout_scaled ,accel_yout_scaled ,accel_zout_scaled
     
