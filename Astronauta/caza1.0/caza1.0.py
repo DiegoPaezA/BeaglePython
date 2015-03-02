@@ -78,6 +78,7 @@ class WorkerImu(QtCore.QObject):
         self.data[0] = ax
         self.data[2] = ay
         self.data[4] = az
+        
         for i in self.data:
             self.accel.write(str(i))
         self.accel.write("\n")
