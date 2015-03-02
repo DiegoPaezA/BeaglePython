@@ -580,7 +580,7 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Develop By : Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 </string>
+            <string>Develope By : Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 </string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
