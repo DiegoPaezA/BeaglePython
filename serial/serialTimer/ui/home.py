@@ -65,7 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data2 = [] # lista para leer los angulos de los sensores
         
         self.numSensores = 7
-        self.numAngulos = 4 # w,x,y,z 
+        self.numAngulos = 3 # yaw,pith,roll 
         self.totalAngulos = self.numAngulos * self.numSensores # total angulos leidos
         self.sensoresOk = np.array(['$S1O', '$S2O', '$S3O', '$S4O', '$S5O', '$S6O', '$S7O'])
         self.sensoresBad = np.array(['$S1B', '$S2B', '$S3B', '$S4B', '$S5B', '$S6B', '$S7B'])
@@ -97,8 +97,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.arduino.write("$")
                 tmp = 0
                 
-            #Espera 3 seg y si no recibe nada del arduino ingresa al loop    
-            elif off_time >= 3:
+            #Espera 2 seg y si no recibe nada del arduino ingresa al loop    
+            elif off_time >= 2:
                 print "Arduino is Runing!"
                 tmp = 0
                 off_time = 0
@@ -132,14 +132,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         self.data2.append(self.arduino.readline())
         time.sleep(0.1)
-            
+        
+        
         self.splitString = (self.data2[0].split(",")) #angulos separados por string
-
+        
         for i in range(0,len(self.splitString)-1):    
             self.splitAngulos[i]=(float(self.splitString[i]))
             
         print "---------------------------------------------------------------"    
-        print self.splitAngulos[0], self.splitAngulos[1],self.splitAngulos[2],self.splitAngulos[3]
+        print self.splitAngulos[0], self.splitAngulos[1],self.splitAngulos[2]
         print "---------------------------------------------------------------"
         
         self.data2 = []
