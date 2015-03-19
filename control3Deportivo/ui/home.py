@@ -479,7 +479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #hacer diferencia de la posicion de referencia vs la actual
             print " "
             print " "
-            ref = 7 # +- 7 grados de aceptacion
+            ref = 10 # +- 7 grados de aceptacion
             kref1 = 0
             kref2 = 0
             for i in range(0,len(self.splitAngulos)):    
@@ -511,10 +511,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # definir estado de la posicion 1, si ingresa, si sale o si se mantiene
             if posicionAnterior1 == True and posicionActual1 == False:
                 print "Salio de la posicion1"
-            elif posicionAnterior1 == False and posicionActual1 == True:    
-                print "Entro a la posicion"
                 print "Activar EMG"
                 print "Guardar el elapse time on"
+            elif posicionAnterior1 == False and posicionActual1 == True:    
+                print "Entro a la posicion"
             elif posicionAnterior1 == True and posicionActual1 == True:
                 print "Mantiene la posicion"
             elif posicionAnterior1 == False and posicionActual1 == False:
