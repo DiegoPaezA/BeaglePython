@@ -5,6 +5,7 @@
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
 # Estatus : Integrando sensores imu y triger con elapse time
+# update 21, marzo, 2015
 """
 Module implementing MainWindow.
 """
@@ -15,7 +16,6 @@ from PyQt4 import QtCore, QtGui
 
 from Ui_home import Ui_MainWindow
 
-import pyqtgraph as pg
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.ADC as ADC
 import Adafruit_BBIO.UART as UART
@@ -95,8 +95,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #construir grafica
         self.p =self.plot 
         self.curve1 = self.p.plot()
-        self.curve1_2 = self.p.plot()
-        self.curve1_3 = self.p.plot()
         self.curve2 = self.p.plot()
         
         #-------------------------------------------------------------------------
@@ -142,26 +140,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSignature("")
     def getRR(self,rrint):  
         global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
-
         if (n==0): 
             rr_start = time.time()
             n=1
             print("interrup")
-            
         elif (n==1):
             j += 1
             i += 1
             print "Calibrando"
-            
             rr_end = time.time()
             rr_value = rr_end - rr_start 
             rr_start = rr_end
             rr_mseg = int(rr_value*1000) # ajuste para presentar en segundos
-            
-            
             rr_med_temp += rr_mseg
             rr_med_actual = rr_med_temp//j # media
-            
             # Filtro ajuste Media Local
             if j==3:
                 rr_med_ant = rr_med_actual
@@ -170,21 +162,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 rr_med_actual = 0
                 rr_med_temp = 0
                 n = 2 # sale de etapa de calibracion
+                self.tiempo.restart() # Reinicia el vector de tiempo cuando se activa la VFC
             #-------------------------
-            
         elif n == 2:
         
             j += 1
             i += 1
-            
-            
             rr_end = time.time()
             rr_value = rr_end - rr_start 
             rr_start = rr_end
-            
-            rr_mseg = int(rr_value*1000) # ajuste para presentar en segundos
-            
-            
+            rr_mseg = int(rr_value*1000) # ajuste para presentar en msegundos
             # print "RR Leido ---> ",rr_mseg 
             
             if rr_mseg > (rr_med_ant + 200):
@@ -223,10 +210,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print "rr_mseg ---> ", rr_mseg
                 
                 self.totalrr.append(rr_mseg) # crear vector con intervalos rr
-                self.rrtriger.append(rr_mseg) # crear vector con intervalos + triger 1
-                
-                #if self.trigerflag == 1:            
-                #    self.rrshot.append(rr_mseg) # crear vector con intervalos rr del tiro
                 
                 self.labelintervaloRR.setText('')
                 self.labelbpsout.setText('')
@@ -306,12 +289,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #inicializar thread de interrupcion
             GPIO.remove_event_detect("P9_12")
             np.savetxt('rr' + str(self.dataread) + horaActual + '.txt', self.totalrr, fmt='%i') # salvar archivo rr total
-            if self.tflag == 1:
-                np.savetxt('rrtriger' + str(self.dataread) + horaActual + '.txt', self.rrtriger, fmt='%i') # salvar archivo rr total
-                        
         else:
             print "VFC inactivo"
-            
         #----------------------------EMG--------------------------------------------------------------------------------
         if self.activarEMG.isChecked() == True: 
             self.adctimer.stop() # parar timer 
@@ -320,14 +299,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pauseEmgButton.setText('Pausar Emg')
         else:
             print "EMG Inactivo"
-        #---------------------------------------------------------------------------------------------------------------
          #----------------------------IMUS--------------------------------------------------------------------------------
         if self.activarIMUS.isChecked() == True: 
             self.imustimer.stop() #Desactivar lectura sensores
         else:
             print "EMG Inactivo"
         #---------------------------------------------------------------------------------------------------------------
-    
         if self.shootresult != []:
             np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i') # salvar resultado
         
@@ -335,8 +312,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             np.savetxt('vectorTiempoOn' + str(self.dataread) + horaActual + '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
             np.savetxt('vectorTiempoOff' + str(self.dataread) + horaActual + '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
             
-        
-         
         self.shootresult = []   # clear resultado
         self.timeVectorOn = []
         self.timeVectorOff = []
@@ -358,23 +333,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        self.tflag = 1 # triger fue ejecutado, salvar archivos
-        
         if self.trigerflag == 0: # inicia la captura del tiro
                 self.trigerflag = 1
                 self.ButtonTrigeron.setText('Triger Shot Stop')
                 self.ButtonStop.setEnabled(False)
-                self.timeVectorOn.append(self.tiempo.elapsed())    
+                self.timeVectorOn.append(self.tiempo.elapsed()) # Agrega tiempo de elapse al vector de triggers    
                 print "Triger Shot Start"
                 
         elif self.trigerflag == 1: # salva el archivo con los datos capturados
                 self.trigerflag = 0
-                
                 self.timeVectorOff.append(self.tiempo.elapsed())
                 print "Triger Shot Stop"
-                
                 self.ButtonTrigeron.setText('Triger Shot Start')
-                
+        
                 text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
                 if ok:
                     if text != "":
