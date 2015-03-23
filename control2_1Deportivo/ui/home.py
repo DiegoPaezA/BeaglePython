@@ -23,7 +23,7 @@ import serial as sc
 
 import time, math, os, sys
 import numpy as np
-import datetime
+
 
 # Inicializar Variables
 n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
@@ -282,7 +282,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "stop capture"
         
         
-        horaActual = str(datetime.datetime.now())
+        horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
         
         #----------------------------VFC-------------------------------------------------------------------------------
         if self.activarVFC.isChecked() == True:  # True Activo, False no activo
@@ -509,7 +509,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def savePosition(self):
         print "save position"
-        horaActual = str(datetime.datetime.now())
+        #horaActual = str(datetime.datetime.now())
+        horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
+
         np.savetxt('position' + str(self.dataread) + horaActual + '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
     
     
