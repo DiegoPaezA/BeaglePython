@@ -511,7 +511,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "save position"
         #horaActual = str(datetime.datetime.now())
         horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
-
         np.savetxt('position' + str(self.dataread) + horaActual + '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
     
     
