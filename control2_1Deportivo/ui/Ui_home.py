@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/diegopaez/BeaglePython/control2_1Deportivo/ui/home.ui'
+# Form implementation generated from reading ui file '/home/ieb-ufsc/BeaglePython/control2_1Deportivo/ui/home.ui'
 #
-# Created: Sat Mar 21 12:35:34 2015
+# Created: Fri Mar 27 12:54:50 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -355,7 +355,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label.setText(_translate("MainWindow", "Interface de Controle para Desenvolvedor", None))
         self.buttongo.setText(_translate("MainWindow", "GO!", None))
-        self.label_4.setText(_translate("MainWindow", "<html><head/><body><p align=\"justify\"><span style=\" font-size:11pt; font-weight:600;\">Insira o Nome e # do Teste :</span></p></body></html>", None))
+        self.label_4.setText(_translate("MainWindow", "<html><head/><body><p align=\"justify\"><span style=\" font-size:11pt; font-weight:600;\">Digite o Nome e No. do Teste :</span></p></body></html>", None))
         self.activarVFC.setText(_translate("MainWindow", "Registro VFC", None))
         self.activarIMUS.setText(_translate("MainWindow", "Registro IMUS", None))
         self.label_11.setText(_translate("MainWindow", "Ativar:", None))
@@ -366,7 +366,7 @@ class Ui_MainWindow(object):
         self.savePositionButton.setText(_translate("MainWindow", "Save Position", None))
         self.resetButton.setText(_translate("MainWindow", "Reset", None))
         self.pauseEmgButton.setText(_translate("MainWindow", "Pause Emg", None))
-        self.label_6.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Variaveis Actuais </span></p></body></html>", None))
+        self.label_6.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Variaveis Atuais </span></p></body></html>", None))
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Intervalo RR : </span></p></body></html>", None))
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Bpm : </span></p></body></html>", None))
         self.arduinoLabel.setText(_translate("MainWindow", "--", None))
@@ -376,7 +376,7 @@ class Ui_MainWindow(object):
         self.tempoProvaout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt;\">00:00</span></p></body></html>", None))
         self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Temporizador :</p></body></html>", None))
         self.relojout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; color:#ff0000;\">00:00</span></p></body></html>", None))
-        self.label_10.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Seleccionar Grafico :</span></p></body></html>", None))
+        self.label_10.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Selecionar Grafico :</span></p></body></html>", None))
         self.plotEMG.setText(_translate("MainWindow", "EMG", None))
         self.plotVFC.setText(_translate("MainWindow", "VFC", None))
         self.plotButton.setText(_translate("MainWindow", "Plot", None))
