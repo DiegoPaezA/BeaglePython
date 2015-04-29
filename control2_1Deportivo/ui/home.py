@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # controlDeportivo_V2_
 # Software para captura fisiologica, no incluye el procesamiento
-# update 16,marzo,2015
+# Origem: 16,marzo,2015
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
 # Estatus : Integrando sensores imu y triger con elapse time
-# update 21, marzo, 2015
+# Update: 29, marzo, 2015
 """
 Module implementing MainWindow.
 """
@@ -22,7 +22,7 @@ import Adafruit_BBIO.ADC as ADC
 import Adafruit_BBIO.UART as UART
 import serial as sc
 
-import time, math, os, sys
+import time #, math, os, sys
 import numpy as np
 
 
@@ -66,13 +66,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.totalrr=[]         # dynamic array
         self.rrtriger = []
-        self.shootresult = []     # dynamic array
+        #self.shootresult = []     # dynamic array
         self.trigerflag = 0
         self.tflag = 0
         self.temporizador = 180 # segundos
         self.tempoProva = [0] 
         self.emgRead = []
-        
+        self.posicioncounter = 0
         
         self.tiempo = QtCore.QTime() # lector del tiempo actual del sistema Y vector de tiempo
         self.timeVectorOn = [] #
@@ -82,7 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Creo mi Timer y lo conecto a una funcion
         self.adctimer = QtCore.QTimer()
         QtCore.QObject.connect(self.adctimer, QtCore.SIGNAL("timeout()"), self.readADC)
-        self.adctimer.setInterval(4) # Fs= 100Hz = 10ms Fs = 240 Hz = 4.7ms # Fs = 580 Hz = 1.7ms
+        self.adctimer.setInterval(4) # Fs= 100Hz = 10ms Fs = 250 Hz = 4ms # Fs = 580 Hz = 1.7ms
         
         # crear timer show Tiempo
         #Creo mi Timer y lo conecto a una funcion
@@ -208,8 +208,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 bpmt += rr_value
                 # --------------------------
                 # Calculo bpm
-                if i==3:
-                    bpm = int(60/(bpmt / 3))
+                if i==20:
+                    bpm = int(60/(bpmt / 20))
                     i = 0         
                     bpmt = 0
                 # -----------------------
@@ -311,16 +311,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print "EMG Inactivo"
         #---------------------------------------------------------------------------------------------------------------
+        """
+        #desactivar salvar resultado
         if self.shootresult != []:
             np.savetxt('resultado' + str(self.dataread) + horaActual + '.txt', self.shootresult, fmt='%i') # salvar resultado
         
         if self.timeVectorOn != [] and self.timeVectorOff != []:
             np.savetxt('vectorTiempoOn' + str(self.dataread) + horaActual + '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
             np.savetxt('vectorTiempoOff' + str(self.dataread) + horaActual + '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
-            
-        self.shootresult = []   # clear resultado
+        self.shootresult = []   # clear resultado    
+        """
         self.timeVectorOn = []
         self.timeVectorOff = []
+        self.posicioncounter = 0 # reiniciar contador de tiros
         
         self.ButtonStart.setEnabled(False)
         self.ButtonStop.setEnabled(False)
@@ -350,13 +353,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.trigerflag = 0
                 self.timeVectorOff.append(self.tiempo.elapsed())
                 print "Triger Shot Stop"
-                self.ButtonTrigeron.setText('Triger Shot Start')
-        
+                """
+                # Desactivar funcion que pide el resultado
                 text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
                 if ok:
                     if text != "":
                         self.shootresult.append(int(str(text)))
-                
+                """
                 self.ButtonTrigeron.setText('Triger Shot Start')
                 self.ButtonStop.setEnabled(True)
                 
@@ -390,7 +393,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def showTime(self):
     #Show Current Time in "hh:mm:ss" format
-        b = self.tiempo.currentTime().toString(str("hh:mm:ss"))
+        #b = self.tiempo.currentTime().toString(str("hh:mm:ss"))
         # print('%02d:%02d' % (minutes, seconds))
         
         # tiempo prueba
@@ -449,16 +452,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def resetAll(self):
         global n,i,j,k,rr_start, rr_value, rr_end, rr_mseg, rr_med_actual,rr_med_ant,rr_med_temp, bpm , bpmt
-
-        
         # reset all Variables
-        n = 0 ; i = 0 ; j = 0 ; k = 0;  count = 0;
+        n = 0 ; i = 0 ; j = 0 ; k = 0;  
         rr_end=0; rr_value=0; rr_mseg=0;rr_med_temp=0;
         rr_med_actual=0; bpm=0; rr_med_ant=0 ; bpmt = 0
         self.temporizador = 180 # segundos
        # Inicializar la comunicacion con el arduino
     def initSerial(self):        
-        tmp = 1
         loopOn = 1
         off_time = 0
         start_time = time.time()
@@ -517,8 +517,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def savePosition(self):
         print "save position"
         #horaActual = str(datetime.datetime.now())
-        horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
-        np.savetxt('position' + str(self.dataread) + horaActual + '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
+        #horaActual = time.strftime('%d-%b-%y-%H:%M:%S')
+        self.posicioncounter += 1
+        np.savetxt('position' + str(self.dataread) + "_" +str(self.posicioncounter)+ '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
+        
     
     def resetArduino(self):
         #---Reset Arduino
