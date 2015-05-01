@@ -4,8 +4,8 @@
 # Origem: 1,mayo,2015
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
-# Estatus : Gestion de sesiones por carpetas, red neural
-# Update: 1, mayo, 2015
+# Estatus : Gestion de sesiones por carpetas
+# Update: 2, mayo, 2015
 """
 Module implementing MainWindow.
 """
@@ -391,13 +391,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # print('%02d:%02d' % (minutes, seconds))
 
         # tiempo prueba
-
         minutesP = int(self.tempoProva[0]/60)
         secondsP = int(self.tempoProva[0]%60)
 
         #print('%02d:%02d' % (minutesP, secondsP))
-
-
         self.tempoProva[0] += 1
 
         if self.temporizador != 0 :
