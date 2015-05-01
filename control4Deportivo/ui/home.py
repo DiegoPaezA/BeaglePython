@@ -4,7 +4,7 @@
 # Origem: 1,mayo,2015
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
-# Estatus : Gestion de sesiones por carpetas
+# Estatus : Gestion de sesiones por carpetas, update interface 
 # Update: 2, mayo, 2015
 """
 Module implementing MainWindow.
