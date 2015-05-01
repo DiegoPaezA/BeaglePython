@@ -494,7 +494,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data2 = []
 
     def imuStatus(self):
-
+        print "verificando imus estatus"
         self.arduino.flushInput() # Limpia el puerto serial
         self.arduino.write("$$$$") # imprime el comando verificacion de status
         time.sleep(.1)
