@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>863</width>
-    <height>698</height>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>25</x>
-      <y>25</y>
+      <y>15</y>
       <width>806</width>
-      <height>656</height>
+      <height>681</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_6">
@@ -54,7 +54,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Interface de Controle para Desenvolvedor</string>
+          <string>Control Interface For Developer</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -105,7 +105,7 @@
             </font>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Digite o Nome e No. do Teste :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a name=&quot;result_box&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;T&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;ype the name and session number:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -144,7 +144,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Registro VFC</string>
+          <string>HRV Register</string>
          </property>
         </widget>
        </item>
@@ -156,7 +156,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Registro IMUS</string>
+          <string>IMUS Register</string>
          </property>
         </widget>
        </item>
@@ -170,7 +170,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Ativar:</string>
+          <string>Enable:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -185,7 +185,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Registro EMG</string>
+          <string>EMG Register</string>
          </property>
         </widget>
        </item>
@@ -252,22 +252,7 @@
      </item>
      <item row="2" column="1">
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="1">
-        <widget class="QPushButton" name="savePositionButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Save Position</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
+       <item row="3" column="1">
         <widget class="QPushButton" name="resetButton">
          <property name="enabled">
           <bool>false</bool>
@@ -299,10 +284,25 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0" rowspan="3">
+       <item row="0" column="0" rowspan="4">
         <widget class="Line" name="line_11">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="savePositionButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Save Position</string>
          </property>
         </widget>
        </item>
@@ -318,7 +318,7 @@
           </font>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Variaveis Atuais &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a name=&quot;result_box&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;C&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;urrent&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt; Variables&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -334,7 +334,7 @@
           </font>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Intervalo RR : &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;RR Interval : &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -419,7 +419,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Tempo Prova :</string>
+          <string>Event Time :</string>
          </property>
         </widget>
        </item>
@@ -449,7 +449,7 @@
           </font>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Temporizador :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Timer :&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -482,7 +482,7 @@
            <item>
             <widget class="QLabel" name="label_10">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Selecionar Grafico :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a name=&quot;result_box&quot;/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;S&lt;/span&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;elect Graph:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -527,7 +527,7 @@
               </font>
              </property>
              <property name="text">
-              <string>VFC</string>
+              <string>HRV</string>
              </property>
             </widget>
            </item>
@@ -563,6 +563,29 @@
          </item>
          <item>
           <widget class="PlotWidget" name="plot"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Develope By: Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
