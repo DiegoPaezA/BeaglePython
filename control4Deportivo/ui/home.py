@@ -488,6 +488,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(0,len(self.splitString)-1):
             # convertir string to float y despues float to int
             self.splitAngulos[i]=int((float(self.splitString[i])))
+        print "Angulos: ", self.splitAngulos   
         self.data2 = []
 
     def imuStatus(self):
