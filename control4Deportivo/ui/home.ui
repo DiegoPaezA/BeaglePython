@@ -419,7 +419,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Event Time :</string>
+          <string>Session Time :</string>
          </property>
         </widget>
        </item>

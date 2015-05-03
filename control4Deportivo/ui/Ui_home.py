@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/diegopaez/BeaglePython/control4Deportivo/ui/home.ui'
 #
-# Created: Fri May  1 14:19:22 2015
+# Created: Sun May  3 17:28:04 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -378,7 +378,7 @@ class Ui_MainWindow(object):
         self.arduinoLabel.setText(_translate("MainWindow", "--", None))
         self.labelbpsout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">-----</span></p></body></html>", None))
         self.labelintervaloRR.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">-----</span></p></body></html>", None))
-        self.label_8.setText(_translate("MainWindow", "Event Time :", None))
+        self.label_8.setText(_translate("MainWindow", "Session Time :", None))
         self.tempoProvaout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt;\">00:00</span></p></body></html>", None))
         self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Timer :</p></body></html>", None))
         self.relojout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; color:#ff0000;\">00:00</span></p></body></html>", None))
