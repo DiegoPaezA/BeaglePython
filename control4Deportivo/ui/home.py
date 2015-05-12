@@ -106,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Creo mi Timer y lo conecto a una funcion
         self.imustimer = QtCore.QTimer()
         QtCore.QObject.connect(self.imustimer, QtCore.SIGNAL("timeout()"), self.imusRead)
-        self.imustimer.setInterval(100)
+        self.imustimer.setInterval(20) #40ms -> 25Hz; 20ms -> 50Hz
 
         #-------------------------------------------------------------------------
         #reset arduino
