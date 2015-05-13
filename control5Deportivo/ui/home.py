@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# controlDeportivo_V4_1
+# controlDeportivo_V5
 # Software para captura fisiologica, no incluye el procesamiento
-# Origem: 1,mayo,2015
+# Origem: 13,mayo,2015
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
-# Estatus : Gestion de sesiones por carpetas, update interface lenguage
+# Estatus : triger elapse time ajustado para ser tomado cuando salva la posicion
 # Update: 13, mayo, 2015
 """
 Module implementing MainWindow.
