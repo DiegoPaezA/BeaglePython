@@ -251,7 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.activarIMUS.isChecked() == True:   # True Activo, False no activo
             self.imustimer.start() # Activar lectura de sensores
-            self.savePositionButton.setEnabled(True) #activar boton tomar posicion
+            #self.savePositionButton.setEnabled(True) #activar boton tomar posicion
             self.imuStatus() # Verificar status de los sensores
         else:
             print "IMUS inactivos"
@@ -336,28 +336,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot documentation goes here.
         """
-        if self.trigerflag == 0: # inicia la captura del tiro
-                self.trigerflag = 1
-                self.ButtonTrigeron.setText('Triger Shot Stop')
-                self.ButtonStop.setEnabled(False)
-                self.timeVectorOn.append(self.tiempo.elapsed()) # Agrega tiempo de elapse al vector de triggers
-                print "Triger Shot Start"
-
-        elif self.trigerflag == 1: # salva el archivo con los datos capturados
-                self.trigerflag = 0
-                self.timeVectorOff.append(self.tiempo.elapsed())
-                print "Triger Shot Stop"
-                """
-                # Desactivar funcion que pide el resultado
-                text, ok = QtGui.QInputDialog.getText(self, 'Resultado', 'Insira o Resultado:')
-                if ok:
-                    if text != "":
-                        self.shootresult.append(int(str(text)))
-                """
-                self.ButtonTrigeron.setText('Triger Shot Start')
-                self.ButtonStop.setEnabled(True)
-
-
+		# Agrega tiempo de elapse al vector de triggers 
+        self.timeVectorOn.append(self.tiempo.elapsed())
+        if self.activarIMUS.isChecked() == True: 
+			self.savePosition()
+		
     @pyqtSignature("")
     def enablebuttons(self):
 
@@ -508,7 +491,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print "save position"
         self.posicioncounter += 1
         np.savetxt('position' + str(self.dataread) + "_" +str(self.posicioncounter)+ '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
-
 
     def resetArduino(self):
         #---Reset Arduino

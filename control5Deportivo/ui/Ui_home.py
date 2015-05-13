@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/diegopaez/BeaglePython/control4Deportivo/ui/home.ui'
+# Form implementation generated from reading ui file '/home/ieb-ufsc/BeaglePython/control5Deportivo/ui/home.ui'
 #
-# Created: Fri May  1 14:19:22 2015
+# Created: Wed May 13 15:16:46 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -367,7 +367,7 @@ class Ui_MainWindow(object):
         self.label_11.setText(_translate("MainWindow", "Enable:", None))
         self.activarEMG.setText(_translate("MainWindow", "EMG Register", None))
         self.ButtonStart.setText(_translate("MainWindow", "Start Capture", None))
-        self.ButtonTrigeron.setText(_translate("MainWindow", "Trigger Shoot Start", None))
+        self.ButtonTrigeron.setText(_translate("MainWindow", "Save Shoot Position", None))
         self.ButtonStop.setText(_translate("MainWindow", "Stop Capture", None))
         self.resetButton.setText(_translate("MainWindow", "Reset", None))
         self.pauseEmgButton.setText(_translate("MainWindow", "Pause Emg", None))
@@ -378,7 +378,7 @@ class Ui_MainWindow(object):
         self.arduinoLabel.setText(_translate("MainWindow", "--", None))
         self.labelbpsout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">-----</span></p></body></html>", None))
         self.labelintervaloRR.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">-----</span></p></body></html>", None))
-        self.label_8.setText(_translate("MainWindow", "Event Time :", None))
+        self.label_8.setText(_translate("MainWindow", "Session Time :", None))
         self.tempoProvaout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt;\">00:00</span></p></body></html>", None))
         self.label_7.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Timer :</p></body></html>", None))
         self.relojout.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; color:#ff0000;\">00:00</span></p></body></html>", None))
@@ -386,7 +386,7 @@ class Ui_MainWindow(object):
         self.plotEMG.setText(_translate("MainWindow", "EMG", None))
         self.plotVFC.setText(_translate("MainWindow", "HRV", None))
         self.plotButton.setText(_translate("MainWindow", "Plot", None))
-        self.label_5.setText(_translate("MainWindow", "Develope By: Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 ", None))
+        self.label_5.setText(_translate("MainWindow", "Develope By : Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 ", None))
 
 from pyqtgraph import PlotWidget
 

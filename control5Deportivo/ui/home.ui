@@ -228,7 +228,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Trigger Shoot Start</string>
+          <string>Save Shoot Position</string>
          </property>
         </widget>
        </item>
@@ -419,7 +419,7 @@
           </font>
          </property>
          <property name="text">
-          <string>Event Time :</string>
+          <string>Session Time :</string>
          </property>
         </widget>
        </item>
@@ -580,7 +580,7 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Develope By: Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 </string>
+            <string>Develope By : Eng. Diego R. Páez Ardila, IEB-UFSC, 2015 </string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
