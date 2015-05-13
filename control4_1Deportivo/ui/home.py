@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# controlDeportivo_V4_
+# controlDeportivo_V4_1
 # Software para captura fisiologica, no incluye el procesamiento
 # Origem: 1,mayo,2015
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
 # Estatus : Gestion de sesiones por carpetas, update interface lenguage
-# Update: 2, mayo, 2015
+# Update: 13, mayo, 2015
 """
 Module implementing MainWindow.
 """
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Creo mi Timer y lo conecto a una funcion
         self.imustimer = QtCore.QTimer()
         QtCore.QObject.connect(self.imustimer, QtCore.SIGNAL("timeout()"), self.imusRead)
-        self.imustimer.setInterval(100)
+        self.imustimer.setInterval(20) #40ms -> 25Hz; 20ms -> 50Hz
 
         #-------------------------------------------------------------------------
         #reset arduino

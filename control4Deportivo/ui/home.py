@@ -5,7 +5,7 @@
 # Diego R. Paez Ardila
 # Ubicacion: IEB-UFSC - Brasil
 # Estatus : Gestion de sesiones por carpetas, update interface lenguage
-# Update: 2, mayo, 2015
+# Update: 13, mayo, 2015
 """
 Module implementing MainWindow.
 """
