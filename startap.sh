@@ -12,12 +12,12 @@
 echo Wait a few seconds for the USB to be ready
 sleep 5
 
-echo Initialising wireless interface
-ifconfig wlan0 inet 192.168.11.65
+#echo Initialising wireless interface
+#ifconfig wlan0 inet 192.168.11.65
 echo Starting DHCP server
-/usr/sbin/udhcpd -f -S /etc/udhcpd.conf.wlan &
+/etc/init.d/dnsmasq restart &
 echo Starting AP software
 # /usr/local/bin/hostapd /etc/hostapd.conf
-hostapd /etc/hostapd.conf
+/etc/init.d/hostapd restart
 
 echo Fin Ok
