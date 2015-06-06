@@ -9,8 +9,8 @@
 # Description:       Longer script description.
 ### END INIT INFO
 
-echo Wait a few seconds for the USB to be ready
-sleep 5
+echo Start Ap
+
 
 #echo Initialising wireless interface
 #ifconfig wlan0 inet 192.168.11.65
