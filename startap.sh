@@ -9,11 +9,7 @@
 # Description:       Longer script description.
 ### END INIT INFO
 
-echo Start Ap
 
-
-#echo Initialising wireless interface
-#ifconfig wlan0 inet 192.168.11.65
 echo Starting DHCP server
 /etc/init.d/dnsmasq restart &
 echo Starting AP software
