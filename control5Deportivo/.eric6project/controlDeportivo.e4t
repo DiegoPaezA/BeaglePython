@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-5.1.dtd">
 <!-- eric6 tasks file for project controlDeportivo -->
+<<<<<<< HEAD
 <!-- Saved: 2015-06-10, 11:13:49 -->
+=======
+<<<<<<< HEAD
+<!-- Saved: 2015-06-11, 12:26:42 -->
+=======
+<!-- Saved: 2015-06-01, 15:40:39 -->
+>>>>>>> 558f530dd6980feb30a6cbe6d1db9d28b8bdb54c
+>>>>>>> f7dbf52f74de3dea6decbc36283565821087c761
 <Tasks version="5.1">
   <ProjectScanFilter></ProjectScanFilter>
 </Tasks>
