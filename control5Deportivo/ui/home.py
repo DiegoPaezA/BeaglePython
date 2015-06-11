@@ -309,9 +309,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print "EMG Inactivo"
         #---------------------------------------------------------------------------------------------------------------
 
-        if self.timeVectorOn != [] and self.timeVectorOff != []:
+        if self.timeVectorOn != [] :
             np.savetxt('vectorTOn' + str(self.dataread)+ '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
-            np.savetxt('vectorTOff' + str(self.dataread)+ '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
+            #np.savetxt('vectorTOff' + str(self.dataread)+ '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
 
         #self.shootresult = []   # clear resultado
 
