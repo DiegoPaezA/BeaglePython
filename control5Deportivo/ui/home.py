@@ -497,6 +497,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def resetArduino(self):
         #---Reset Arduino
+        print "Reset Arduino"
         digitalWrite(RST, HIGH)
         time.sleep(1)
         digitalWrite(RST, LOW)
