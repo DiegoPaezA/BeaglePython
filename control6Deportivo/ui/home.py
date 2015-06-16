@@ -126,6 +126,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data2 = [] # lista para leer los angulos de los sensores
         self.datoplotpith = []
         self.datoplotroll = []
+        self.imusmatrix = np.zeros((14,20))
 
         self.posicion1 = False #bandera posiciones
         self.posicion2 = False
@@ -313,15 +314,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          #----------------------------IMUS--------------------------------------------------------------------------------
         if self.activarIMUS.isChecked() == True:
             self.imustimer.stop() #Desactivar lectura sensores
+            np.savetxt('matriximus' + str(self.dataread) + '.txt', self.imusmatrix, fmt='%i') # salvar archivo rr total
+            self.imusmatrix[:,:] = 0
         else:
             print "Imus Inactivo"
         #---------------------------------------------------------------------------------------------------------------
 
         if self.timeVectorOn != [] :
             np.savetxt('vectorTOn' + str(self.dataread)+ '.txt', self.timeVectorOn, fmt='%i') # salvar resultado
-            #np.savetxt('vectorTOff' + str(self.dataread)+ '.txt', self.timeVectorOff, fmt='%i') # salvar resultado
-
-        #self.shootresult = []   # clear resultado
+        
+            
 
         self.timeVectorOn = []
         self.timeVectorOff = []
@@ -486,7 +488,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def savePosition(self):
         print "save position"
-        self.posicioncounter += 1
+        self.imusmatrix[:,self.posicioncounter] = self.splitAngulos # agregar angulos a la matrix      
+        self.posicioncounter += 1        
         np.savetxt('position' + str(self.dataread) + "_" +str(self.posicioncounter)+ '.txt', self.splitAngulos, fmt='%i') # salvar archivo rr total
 
     def resetArduino(self):
