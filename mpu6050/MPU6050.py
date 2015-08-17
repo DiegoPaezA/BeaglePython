@@ -23,8 +23,6 @@ import select
 import os
 import struct
 import logging
-#from RPIO import PWM  #Raspberry Pi
-#import RPIO		   #Raspberry pi
 import subprocess
 from datetime import datetime
 

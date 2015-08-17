@@ -1,5 +1,6 @@
 from PyQt4 import QtGui, QtCore
-import sys
+import sys,os
+
 import Adafruit_BBIO.GPIO as GPIO
 from MPUaccel import ReadAccel
 
@@ -27,6 +28,8 @@ class MicroGravedad(QtCore.QObject):
         GPIO.add_event_detect("P9_12", GPIO.RISING,callback=self.start, bouncetime=50)
         GPIO.add_event_detect("P9_14", GPIO.RISING,callback=self.stop, bouncetime=50)
         
+        self.dataread = raw_input("Enter Session Name: ")
+        self.crearDir() ## crear directorio
         print "Push Start button"
 
 
@@ -70,15 +73,36 @@ class MicroGravedad(QtCore.QObject):
             
         self.i += 1
 
+    def crearDir(self):
+        self.directorioOriginal = os.getcwd()
+        carpeta = "caza1.0/" +  str(self.dataread)
 
+        directorio = os.path.join(os.pardir, carpeta)
+        if not os.path.isdir(directorio):
+            os.mkdir(directorio)
+        os.chdir(directorio)
+        
 class Worker(QtCore.QObject):
     def do_stuff_timer(self):
         print "Read Accel"
         fax, fay, faz= self.Imu.readAccel()
-        print "acel x: ", fax, " acel y: ", fay, " acel z: ", faz 
+        
+        ax = "%.4f" % round(fax,4)
+        ay = "%.4f" % round(fay,4)
+        az = "%.4f" % round(faz,4)
+        print "acel x: ", ax, " acel y: ", ay, " acel z: ", az
+        self.accel.write(str(ax))
+        self.accel.write(";")
+        self.accel.write(str(ay))
+        self.accel.write(";")
+        self.accel.write(str(az))
+        self.accel.write(";")
+        self.accel.write("\n")
     def stop(self):
         self._exit = True
         self.timer.stop()
+        self.accel.close()
+        
 
     def loop(self):
         self.timer = QtCore.QTimer()
@@ -88,6 +112,9 @@ class Worker(QtCore.QObject):
         
         #Clase leer aceleracion
         self.Imu=ReadAccel()
+        self.accel = open("accel.txt", "w")
+        self.accel.write("ax;ay;az;")
+        self.accel.write("\n")
 
 
 
