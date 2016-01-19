@@ -1,5 +1,5 @@
-#test imu
-print "Test Imu 2"
+#Test Imu + BMP180
+print "Test Imu + BMP180"
 from MPUaccel import ReadAccel
 import Adafruit_BMP.BMP085 as BMP085
 

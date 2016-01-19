@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 import sys,os
 
 import Adafruit_BBIO.GPIO as GPIO
-from MPUaccel import ReadAccel
+from MPU6050 import MPU6050
 
 GPIO.setup("P9_24", GPIO.IN)
 GPIO.setup("P9_26", GPIO.IN)
@@ -61,7 +61,7 @@ class MicroGravedad(QtCore.QObject):
         print "its working"
     def crearDir(self):
         self.directorioOriginal = os.getcwd()
-        carpeta = "caza1.0/" +  str(self.dataread)
+        carpeta = "mpu6050/" +  str(self.dataread)
 
         directorio = os.path.join(os.pardir, carpeta)
         if not os.path.isdir(directorio):
@@ -70,7 +70,7 @@ class MicroGravedad(QtCore.QObject):
 
 class WorkerImu(QtCore.QObject):
     def readImu(self):
-        fax, fay, faz= self.Imu.readAccel()
+        fax, fay, faz, fgx, fgy, fgz= self.Imu.readSensors()
         ax = "%.4f" % round(fax,4)
         ay = "%.4f" % round(fay,4)
         az = "%.4f" % round(faz,4)
@@ -80,15 +80,18 @@ class WorkerImu(QtCore.QObject):
         self.data[4] = az
         
         for i in self.data:
-            with open("accel.txt", "a") as self.accel:
+            if self.off == 1:
                 self.accel.write(str(i))
+            elif self.off == 0:
+                print "off Cambio"
+                self.accel.close() #close accel file       
         self.ite += 1
         if self.ite == 50:
             print "Read Temperatura"
             self.ite = 0
             
     def stop(self):
-        self.accel.close() #close accel file       
+        self.off = 0
         self.timer.stop()
         self._exit = True
     def loop(self):
@@ -97,11 +100,10 @@ class WorkerImu(QtCore.QObject):
         self.timer.timeout.connect(self.readImu)
         self.timer.start(20)
         #Clase leer aceleracion
-        self.Imu=ReadAccel()
+        self.Imu=MPU6050()
         self.accel = open("accel.txt", "w")
         self.accel.write("Ax;Ay;Az;")
         self.accel.write("\n")
-        self.accel.close() #close accel file    
         self.data = [0,';',0,';',0,';',"\n"]
         self.ite = 0
         self.off = 1

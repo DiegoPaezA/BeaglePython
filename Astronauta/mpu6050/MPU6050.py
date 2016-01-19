@@ -268,7 +268,7 @@ class MPU6050 :
     __CALIBRATION_ITERATIONS = 		100
 
     def __init__(self, address=0x68):
-        print "start--config" 
+        
         self.i2c = I2C(address)
         self.address = address
         self.ax_offset = 0
