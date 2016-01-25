@@ -24,23 +24,22 @@ GPIO.setup(Led4, GPIO.OUT)
 ADC.setup()
 
 
-class MicroGravedad(QtCore.QObject):
+class MicroGravedadControl(QtCore.QObject):
 
     def __init__(self):
-        super(MicroGravedad, self).__init__()
-        # Thread Imus Temperatura
+        super(MicroGravedadControl, self).__init__()
+        # Thread Accel
         self.threadimu = QtCore.QThread() 
         self.workerimu = WorkerImu()      
         self.workerimu.moveToThread(self.threadimu) 
-        self.threadimu.started.connect(self.workerimu.loop) 
+        self.threadimu.started.connect(self.workerimu.setup) 
         
         # adding by emitting signal in different thread
         self.threadadc = QtCore.QThread()
         self.workeradc = WorkerADC()
         self.workeradc.moveToThread(self.threadadc)
-        self.threadadc.started.connect(self.workeradc.loop)
+        self.threadadc.started.connect(self.workeradc.setup)
 
-        #self.dataread = raw_input("Enter Session Name: ")
         self.crearDir() ## crear directorio
         print "Push Start Button"
         
@@ -51,8 +50,8 @@ class MicroGravedad(QtCore.QObject):
     def start(self,isr): 
         #-----------------------------------
         print "Start Capture"
-        #self.threadadc.start() # Worker Thread
-        self.threadimu.start() # Worker Thread
+        #self.threadadc.start() # Worker Thread setup start
+        self.threadimu.start() # Worker Thread setup start
         GPIO.remove_event_detect("P9_24")
         #-----------------------------------
         return
@@ -100,12 +99,17 @@ class WorkerImu(QtCore.QObject):
         for i in self.data:
             with open("accel.txt", "a") as self.accel:
                 self.accel.write(str(i))
+                self.accel.flush()
+                #---- probar si el archivo se cierra despues de cada with open
             
     def stop(self):
-        self.accel.close() #close accel file       
+        estado = self.accel.closed
+        print "the file is: " + str(estado)
+        self.accel.close() #close accel file
+        print "the file is: " + str(estado)
         self.timer.stop()
         self._exit = True
-    def loop(self):
+    def setup(self):
         #Configuration of Accel Sensor
         self.Imu=ReadAccel()
         self.accel = open("accel.txt", "w")
@@ -127,7 +131,7 @@ class WorkerADC(QtCore.QObject):
     def stop(self):
         self.timer.stop()
         self._exit = True
-    def loop(self):
+    def setup(self):
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(False)
         self.timer.timeout.connect(self.readEcg)
@@ -137,6 +141,6 @@ class WorkerADC(QtCore.QObject):
         
 if __name__ == "__main__":
     app = QtCore.QCoreApplication(sys.argv)
-    micro = MicroGravedad()
+    micro = MicroGravedadControl()
     GPIO.output(Led1,GPIO.HIGH) #Led1 on Indicates thats software it's running
     sys.exit(app.exec_())
