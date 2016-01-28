@@ -48,14 +48,12 @@ class MicroGravedadControl(QtCore.QObject):
         self.workerTemp.moveToThread(self.threadTemp)
         self.threadTemp.started.connect(self.workerTemp.setup)
         
-
-        
         self.crearDir() ## crear directorio
         print "Push Start Button"
         
-        GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=100)
-        GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=100)
-        GPIO.add_event_detect("P9_30", GPIO.RISING,callback=self.exitapp, bouncetime=100)
+        GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=200)
+        GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=200)
+        GPIO.add_event_detect("P9_30", GPIO.RISING,callback=self.exitapp, bouncetime=200)
         
 
     def start(self,isr): 
@@ -67,49 +65,42 @@ class MicroGravedadControl(QtCore.QObject):
         GPIO.remove_event_detect("P9_24")
         GPIO.output(Led2,GPIO.HIGH) #Led1 on Indicates thats software it's running
         #-----------------------------------
-        return
     
     def stop(self,isr): 
         #------------------
-        #GPIO.remove_event_detect("P9_26")
         if self.threadAdc.isRunning() == True:
             self.workerAdc.stop()
             self.threadAdc.quit()
             self.threadAdc.terminate()
             print "stop adcThread"
-            #------------------
+        #------------------
         if self.threadImu.isRunning() == True:
             self.workerImu.stopFlag()
-            #exitWorkerFlag = self.workerImu.exitWorker
-            #while  exitWorkerFlag != 1:
-            #time.sleep(0.05)
-            #    exitWorkerFlag = self.workerImu.exitflag
+            exitWorkerFlag = self.workerImu.exitWorker
+            while  exitWorkerFlag != 1:
+                time.sleep(0.05)
+                exitWorkerFlag = self.workerImu.exitflag
             self.threadImu.quit()
-            self.threadImu.terminate()
+            #self.threadImu.terminate()
             print "stop imuThread"
-            #------------------
+        #------------------
         if self.threadTemp.isRunning() == True:
             self.workerTemp.stopFlag()
-            #exitWorkerFlag = self.workerTemp.exitWorker
-            #while  exitWorkerFlag != 1:
-            #time.sleep(0.05)
-            #    exitWorkerFlag = self.workerTemp.exitflag
+            exitWorkerFlag = self.workerTemp.exitWorker
+            while  exitWorkerFlag != 1:
+                time.sleep(0.05)
+                exitWorkerFlag = self.workerTemp.exitflag
             self.threadTemp.quit()
-            self.threadTemp.terminate()
             print "stop tempThread"
             
-        print "stop program"
-        GPIO.output(Led1,GPIO.LOW) #Led1 off Indicates thats software it's not running
-        GPIO.output(Led2,GPIO.LOW) #Led1 off Indicates thats software it's not running
+        print "stop capture"
+        GPIO.output(Led2,GPIO.LOW) #Led2 off Indicates stops capture
        
-        #
-        return
     def exitapp(self,isr):
         print "Exit App"
         GPIO.cleanup()
-        QtCore.QCoreApplication.exit(0) # exit app
-        return    
-            
+        GPIO.output(Led1,GPIO.LOW) #Led1 off Indicates thats software it's not running
+        QtCore.QCoreApplication.exit(0) # exit app    
 
     def crearDir(self):
         self.directorioOriginal = os.getcwd()
@@ -120,13 +111,14 @@ class MicroGravedadControl(QtCore.QObject):
             os.mkdir(directorio)
         os.chdir(directorio)
 
+
 class WorkerImu(QtCore.QObject):
     def readImu(self):
         fax, fay, faz= self.Imu.readAccel()
         ax = "%.4f" % round(fax,4)
         ay = "%.4f" % round(fay,4)
         az = "%.4f" % round(faz,4)
-        #print "acel x: ", ax, " acel y: ", ay, " acel z: ", az
+        print "acel x: ", ax, " acel y: ", ay, " acel z: ", az
         self.data[0] = ax
         self.data[2] = ay
         self.data[4] = az
@@ -183,7 +175,7 @@ class WorkerTemp(QtCore.QObject):
         self.bmpData[2] = "%.2f" % round(self.sensorTemp.read_pressure(),2)
         self.bmpData[4] = "%.2f" % round(self.sensorTemp.read_altitude(),2)
         self.bmpData[6] = "%.2f" % round(self.sensorTemp.read_sealevel_pressure(),2) 
-        
+        print self.bmpData
         for i in self.bmpData:
             if (self.stopflag == 0):
                 with open("bmpdata.txt", "a") as self.bmpdatafile:
