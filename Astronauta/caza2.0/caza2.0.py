@@ -164,17 +164,7 @@ class WorkerImu(QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.stopflag = 0
         self.exitflag = 0
-        #Configuration of Accel Sensor
-        self.Imu=ReadAccel()
-        self.accelfile = open("accel.txt", "w")
-        self.accelfile.write("Ax;Ay;Az;")
-        self.accelfile.write("\n")
-        self.accelfile.close() #close accel file    
-        self.data = [0,';',0,';',0,';',"\n"]
-
-        self.timer = QtCore.QTimer()
-        self.timer.setSingleShot(False)
-        self.timer.timeout.connect(self.readImu)
+        
     def readImu(self):
         fax, fay, faz= self.Imu.readAccel()
         ax = "%.4f" % round(fax,4)
@@ -212,6 +202,17 @@ class WorkerImu(QtCore.QObject):
         self.stopflag = 0
         self.exitflag = 0
     def setup(self):
+        #Configuration of Accel Sensor
+        self.Imu=ReadAccel()
+        self.accelfile = open("accel.txt", "w")
+        self.accelfile.write("Ax;Ay;Az;")
+        self.accelfile.write("\n")
+        self.accelfile.close() #close accel file    
+        self.data = [0,';',0,';',0,';',"\n"]
+
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(False)
+        self.timer.timeout.connect(self.readImu)
         self.timer.start(20)
     def afunc(self):
         print "Test"
