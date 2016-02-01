@@ -144,6 +144,7 @@ class MicroGravedadControl(QtCore.QObject):
         print "Exit App"
         GPIO.cleanup()
         GPIO.output(Led1,GPIO.LOW) #Led1 off Indicates thats software it's not running
+        self.threadImu.quit()
         QtCore.QCoreApplication.exit(0) # exit app    
 
     def crearDir(self):
