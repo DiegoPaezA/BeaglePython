@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtCore import *
 import sys,os,time
 
 import Adafruit_BBIO.GPIO as GPIO
@@ -36,7 +37,8 @@ class MicroGravedadControl(QtCore.QObject):
         self.threadImu = QtCore.QThread() 
         self.workerImu = WorkerImu()      
         self.workerImu.moveToThread(self.threadImu) 
-        self.threadImu.started.connect(self.workerImu.setup) 
+        self.threadImu.started.connect(self.workerImu.setup)
+        QtCore.QObject.connect(self.workerImu,SIGNAL("asignal"),self.workerImu.startTimer)
         
         '''
         # adding by emitting signal in different thread
@@ -54,11 +56,29 @@ class MicroGravedadControl(QtCore.QObject):
         self.crearDir() ## crear directorio
         print "Push Start Button"
         
-        GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=200)
+        
         GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=200)
         GPIO.add_event_detect("P9_30", GPIO.RISING,callback=self.exitapp, bouncetime=200)
         
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.Demo)
+        #self.timer.start(1000)
+        
         self.start_stop_flag = 0
+        self.xx = 0
+    def Demo(self):
+        print "Timer Workig"
+    def startTimer(self):
+        if self.xx == 0:
+          self.timer.start(500)
+          self.threadImu.start() # Worker Thread setup start
+          self.xx=1
+        elif self.xx == 1:
+            self.timer.start(500)
+            self.workerImu.afunc()
+        if self.start_stop_flag == 1:
+            GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=200)    
+        self.start_stop_flag = 0     
 
     def start(self,isr): 
         #-----------------------------------
@@ -69,15 +89,17 @@ class MicroGravedadControl(QtCore.QObject):
         #self.threadTemp.start() # Worker Thread setup start
         GPIO.remove_event_detect("P9_24")
         GPIO.output(Led2,GPIO.HIGH) #Led1 on Indicates thats software it's running
-        if self.start_stop_flag == 1:
-            GPIO.add_event_detect("P9_26", GPIO.RISING,callback=self.stop, bouncetime=200)
-        else:
-            self.threadImu.start() # Worker Thread setup start
+        
+        #else:
+        #    self.threadImu.start() # Worker Thread setup start
         self.start_stop_flag = 0    
         #-----------------------------------
     
     def stop(self,isr):
         GPIO.remove_event_detect("P9_26")
+        if self.timer.isActive() == True:
+            self.timer.stop()
+            
         #------------------
         '''
         if self.threadAdc.isRunning() == True:
@@ -109,12 +131,12 @@ class MicroGravedadControl(QtCore.QObject):
             while  exitWorkerFlagTemp != 1:
                 time.sleep(0.005)
                 exitWorkerFlagTemp = self.workerTemp.exitWorker()
-            self.threadTemp.quit()
+            #self.threadTemp.quit()
             print "stop tempThread"
         '''    
         print "stop capture"
-        if self.start_stop_flag == 0:
-            GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=200)
+        #if self.start_stop_flag == 0:
+        #    GPIO.add_event_detect("P9_24", GPIO.RISING,callback=self.start, bouncetime=200)
         self.start_stop_flag = 1    
         GPIO.output(Led2,GPIO.LOW) #Led2 off Indicates stops capture
        
@@ -132,9 +154,27 @@ class MicroGravedadControl(QtCore.QObject):
         if not os.path.isdir(directorio):
             os.mkdir(directorio)
         os.chdir(directorio)
+    def afunc(self,isr):
+        print "Test"
+        self.emit(SIGNAL("asignal"))    
 
 
 class WorkerImu(QtCore.QObject):
+    def __init__(self):
+        QtCore.QObject.__init__(self)
+        self.stopflag = 0
+        self.exitflag = 0
+        #Configuration of Accel Sensor
+        self.Imu=ReadAccel()
+        self.accelfile = open("accel.txt", "w")
+        self.accelfile.write("Ax;Ay;Az;")
+        self.accelfile.write("\n")
+        self.accelfile.close() #close accel file    
+        self.data = [0,';',0,';',0,';',"\n"]
+
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(False)
+        self.timer.timeout.connect(self.readImu)
     def readImu(self):
         fax, fay, faz= self.Imu.readAccel()
         ax = "%.4f" % round(fax,4)
@@ -166,22 +206,17 @@ class WorkerImu(QtCore.QObject):
         self.timer.stop()
         self._exit = True   
         return self.exitflag
-    def setup(self):
+    def startTimer(self):
+        print "Start Timer"
+        self.timer.start(20)
         self.stopflag = 0
         self.exitflag = 0
-        #Configuration of Accel Sensor
-        self.Imu=ReadAccel()
-        self.accelfile = open("accel.txt", "w")
-        self.accelfile.write("Ax;Ay;Az;")
-        self.accelfile.write("\n")
-        self.accelfile.close() #close accel file    
-        self.data = [0,';',0,';',0,';',"\n"]
-
-        self.timer = QtCore.QTimer()
-        self.timer.setSingleShot(False)
-        self.timer.timeout.connect(self.readImu)
+    def setup(self):
         self.timer.start(20)
-        self.exec_() 
+    def afunc(self):
+        print "Test"
+        self.emit(SIGNAL("asignal"))    
+        
         
 class WorkerADC(QtCore.QObject):
     def readEcg(self):
@@ -260,5 +295,7 @@ class WorkerTemp(QtCore.QObject):
 if __name__ == "__main__":
     app = QtCore.QCoreApplication(sys.argv)
     micro = MicroGravedadControl()
+    QtCore.QObject.connect(micro,SIGNAL("asignal"),micro.startTimer)
+    GPIO.add_event_detect("P9_24", GPIO.RISING,callback=micro.afunc, bouncetime=200)
     GPIO.output(Led1,GPIO.HIGH) #Led1 on Indicates thats software it's running
     sys.exit(app.exec_())
