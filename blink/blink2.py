@@ -1,7 +1,7 @@
 from bbio import *
 import Adafruit_BBIO.GPIO as GPIO
 
-LED = GPIO0_4
+LED = GPIO2_3
 off = 0
 def setup():
   pinMode(LED, OUTPUT)
