@@ -82,13 +82,6 @@ class MicroGravedadControl(QtCore.QObject):
             self.timer.stop()
         if self.threadAdc.isRunning() == True:
             self.workerAdc.stopFlag()
-            '''
-            time.sleep(0.1)
-            exitWorkerFlagAdc = self.workerAdc.exitWorker()      
-            while  exitWorkerFlagAdc != 1:
-                time.sleep(0.05)
-                exitWorkerFlagAdc = self.workerAdc.exitWorker()
-            '''
             print "isFinished---->" + str(self.threadAdc.isFinished())
             #print "stop imuThread"
         #------------------
@@ -116,76 +109,14 @@ class MicroGravedadControl(QtCore.QObject):
         os.chdir(directorio)
     def afunc(self,isr):
         print "Test"
-        
         self.emit(SIGNAL("asignal"))    
-
-
-class WorkerImu(QtCore.QObject):
-    def __init__(self):
-        QtCore.QObject.__init__(self)
-        self.stopflag = 0
-        self.exitflag = 0
-        
-    def readImu(self):
-        fax, fay, faz= self.Imu.readAccel()
-        ax = "%.4f" % round(fax,4)
-        ay = "%.4f" % round(fay,4)
-        az = "%.4f" % round(faz,4)
-        print "acel x: ", ax, " acel y: ", ay, " acel z: ", az
-        self.data[0] = ax
-        self.data[2] = ay
-        self.data[4] = az
-        x = 0
-        for i in self.data:
-            #x += 1
-            #print x
-            if (self.stopflag == 0):
-                with open("accel.txt", "a") as self.accelfile:
-                    self.accelfile.write(str(i))
-                    self.accelfile.flush()
-            elif (self.stopflag == 1):
-                print "Stop Reading Imu"
-                self.exitflag = 1
-                self.accelfile.close() #close accel file
-                break
-                
-                #self._exit = True            
-    def stopFlag(self):
-        self.stopflag = 1
-    def exitWorker(self):
-        print "-------ExitWorker"
-        self.timer.stop()
-        self._exit = True   
-        return self.exitflag
-    def startTimer(self):
-        print "Start Timer"
-        self.timer.start(20)
-        self.stopflag = 0
-        self.exitflag = 0
-    def setup(self):
-        #Configuration of Accel Sensor
-        self.Imu=ReadAccel()
-        self.accelfile = open("accel.txt", "w")
-        self.accelfile.write("Ax;Ay;Az;")
-        self.accelfile.write("\n")
-        self.accelfile.close() #close accel file    
-        self.data = [0,';',0,';',0,';',"\n"]
-
-        self.timer = QtCore.QTimer()
-        self.timer.setSingleShot(False)
-        self.timer.timeout.connect(self.readImu)
-        self.timer.start(20)
-    def afunc(self):
-        print "Test"
-        self.emit(SIGNAL("asignal"))    
-        
         
 class WorkerADC(QtCore.QObject):
     def readEcg(self):
         #read Adc
         ecgValue = ADC.read("AIN5") * 1.8 # convierte la lectura a tension
         self.ecgData[0] = "%.3f" % round(ecgValue,3)
-        print self.ecgData
+        
     def stopFlag(self):
         self.stopflag = 1
         self.timer.stop()
@@ -207,7 +138,7 @@ class WorkerADC(QtCore.QObject):
         self.ecgdatafile.write("Ecg")
         self.ecgdatafile.write("\n")
         self.ecgdatafile.close() #close accel file    
-        self.ecgData = [0,"\n"]
+        self.ecgData = []
         
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(False)
