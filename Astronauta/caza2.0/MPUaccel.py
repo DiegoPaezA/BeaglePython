@@ -16,7 +16,6 @@ class ReadAccel :
     MPU6050_RA_ACCEL_CONFIG= 		0x1C
     
     def __init__(self, address=0x68,i2c_bus = 1, Arange =2):
-        print "start--config MPU6050" 
         self.bus = smbus.SMBus(i2c_bus)    # or bus = smbus.SMBus(1) for Revision 2 boards
         self.address = address      # This is the address value read via the i2cdetect command
         self.bus.write_byte_data(self.address, self.power_mgmt_1, 0) # Now wake the 6050 up as it starts in sleep mode
