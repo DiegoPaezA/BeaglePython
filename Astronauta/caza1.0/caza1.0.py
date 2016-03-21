@@ -13,10 +13,11 @@ class MicroGravedad(QtCore.QObject):
         super(MicroGravedad, self).__init__()
         
         # Thread Imus Temperatura
-        self.threadimu = QtCore.QThread()
-        self.workerimu = WorkerImu()
-        self.workerimu.moveToThread(self.threadimu)
-        self.threadimu.started.connect(self.workerimu.loop)
+        self.threadimu = QtCore.QThread()                      #Instanciar la clase qthread
+        self.workerimu = WorkerImu()                           #Instanciar la clase WorkerImu
+        self.workerimu.moveToThread(self.threadimu)            #Asignar el objeto workerimu a el objeto threadimu
+        self.threadimu.started.connect(self.workerimu.loop)    #Asignar la funcion start del thread a la funcion setup del worker
+
         
         # adding by emitting signal in different thread
         self.threadadc = QtCore.QThread()
