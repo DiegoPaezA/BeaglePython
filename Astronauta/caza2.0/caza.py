@@ -34,6 +34,7 @@ class MicroGravedadControl(QtCore.QObject):
 
     def __init__(self):
         super(MicroGravedadControl, self).__init__()
+<<<<<<< HEAD
 
         #print "Qthread Number: " + str(QtCore.QThread.idealThreadCount())
         # Thread Accel
@@ -45,6 +46,16 @@ class MicroGravedadControl(QtCore.QObject):
 
 
         self.crearDir() ## crear directorio
+=======
+        
+        # Thread Accel + Temp
+        self.threadImu = QtCore.QThread() 
+        self.workerImu = WorkerImu()      
+        self.workerImu.moveToThread(self.threadImu) 
+        self.threadImu.started.connect(self.workerImu.setup)
+        QtCore.QObject.connect(self.workerImu,SIGNAL("asignal"),self.workerImu.startTimer)
+        
+>>>>>>> 1253a9c66fed0efe8e85f8907ed065bb8435d663
         print "Push Start Button"
 
 
@@ -79,6 +90,7 @@ class MicroGravedadControl(QtCore.QObject):
     def startTimer(self):
         print "Running..."
         if self.controlTimer == 0:
+            self.crearDir() ## crear directorio
             self.ecgdatafile = open("ecgdata.txt", "w")
             self.ecgdatafile.write("Ecg\n")
             self.timer.start(4) #500Hz
@@ -121,12 +133,27 @@ class MicroGravedadControl(QtCore.QObject):
         QtCore.QCoreApplication.exit(0) # exit app
 
     def crearDir(self):
+<<<<<<< HEAD
         self.directorioOriginal = os.getcwd()
         carpeta = "/home/BeaglePython/Astronauta/caza2.0/data"
         directorio = os.path.join(os.pardir, carpeta)
         if not os.path.isdir(directorio):
             os.mkdir(directorio)
         os.chdir(directorio)
+=======
+        rootDir = "/home/BeaglePython/Astronauta/caza2.0/"
+        stackFolders = []
+        
+        for dirName, subdirList, fileList in os.walk(rootDir):
+            stackFolders.append(dirName)
+        numFolder = len(stackFolders)
+        folderName = "data_" + str(numFolder)
+        folder = "/home/BeaglePython/Astronauta/caza2.0/" + str(folderName) 
+        directory = os.path.join(os.pardir, folder)
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+        os.chdir(directory)
+>>>>>>> 1253a9c66fed0efe8e85f8907ed065bb8435d663
     def afunc(self,isr):
         print "Test"
         self.emit(SIGNAL("asignal"))
